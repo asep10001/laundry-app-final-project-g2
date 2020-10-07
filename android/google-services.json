@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "774958500138",
+    "firebase_url": "https://laundrymockup.firebaseio.com",
+    "project_id": "laundrymockup",
+    "storage_bucket": "laundrymockup.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:774958500138:android:e842a8600a918ae0dd7653",
+        "android_client_info": {
+          "package_name": "com.day14"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "774958500138-k7srint7gt3partl5ldn2al4r4jg88j5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDfBBnU04a11sjR4eLctD1M4fTwXW4Ijug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "774958500138-k7srint7gt3partl5ldn2al4r4jg88j5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
