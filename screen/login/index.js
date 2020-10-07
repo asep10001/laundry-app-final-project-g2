@@ -31,28 +31,86 @@ class LoginOld extends Component {
         password: '',
       },
       userNow: {},
+      cabangNow: [],
     };
   }
 
+  componentDidMount() {}
   subcriber = async (collection, document) => {
     const custDocument = await firestore()
       .collection(collection)
       .doc(document)
       .get();
-    console.log('user now ' + custDocument.data());
+    // console.log('user now ' + custDocument.data());
 
     this.setState({
       userNow: custDocument.data(),
     });
     this.userNowSQLite(custDocument.data());
   };
+
+  cabangSubcriber = async (collection, document) => {
+    const data = [];
+    const branchDocument = await firestore()
+      .collection(collection)
+      .doc(document)
+      .get();
+    // alert('Branch now ' + JSON.parse(branchDocument.data().kuningan).alamat)
+    for (const property in branchDocument.data()) {
+      //   alert(property + ' : ' + branchDocument.data()[property]);
+      data.push(JSON.parse(branchDocument.data()[property]));
+    }
+    this.setState({
+      cabangNow: data,
+    });
+
+    // alert(JSON.stringify(data));
+    this.cabangNowSQLite(data);
+  };
+
+  cabangNowSQLite = async (dataNow) => {
+    // console.log('datanow ' + JSON.stringify(dataNow));
+    const data = [];
+    for (let i = 0; i < dataNow.length; i++) {
+      this.props.sqlite.runQuery(
+        ' insert into branch values (?, ?, ?, ?)',
+        [
+          i + 1,
+          dataNow[i].alamat,
+          dataNow[i].branch,
+          dataNow[i].photo,
+        ],
+        [],
+      ).then(()=>console.info('successfully inserting data cabang'))
+      .catch(err => {
+        this.props.sqlite.runQuery(
+            `update branch set id='${i+1}', alamat='${dataNow[i].alamat}', branch='${dataNow[i].branch}', photo='${dataNow[i].photo}' where id='${i+1}'`,
+            [],
+          )
+      })
+      console.log(i);
+      continue;
+    }
+    this.props.sqlite.runQuery(`select * from branch`, []).then(([results]) => {
+      console.log(results.rows.item(0));
+      for (let i = 0; i < 100; i++) {
+        if (results.rows.item(i) !== undefined) {
+          data.push(results.rows.item(i));
+        }
+      }
+      alert(JSON.stringify(data));
+      this.props.setDataCabang(data);
+    });
+  };
+
   userNowSQLite = async (dataNow) => {
-    console.log('datanow ' + JSON.stringify(dataNow));
+    // console.log('datanow ' + JSON.stringify(dataNow));
     const data = [];
     await this.props.sqlite.runQuery(
       `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}' where id='1'`,
       [],
     );
+    this.cabangSubcriber('branch', dataNow.alamat);
     this.props.sqlite.runQuery(`select * from user`, []).then(([results]) => {
       console.log(results.rows.item(0));
       for (let i = 0; i < 100; i++) {
@@ -129,6 +187,7 @@ class LoginOld extends Component {
                     email: this.state.user.email,
                     password: this.state.user.password,
                   });
+                  //   this.cabangSubcriber('branch', 'jakarta selatan');
                 }}>
                 <Text>Log In</Text>
               </Button>
