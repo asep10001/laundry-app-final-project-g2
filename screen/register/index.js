@@ -12,6 +12,7 @@ import {
   Button,
 } from 'native-base';
 import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 class Register extends Component {
   constructor(props) {
@@ -21,17 +22,36 @@ class Register extends Component {
       user: {
         email: '',
         password: '',
+        username: '',
+        alamat: '',
+        photo: '',
       },
     };
   }
 
-  createUser = (data) => {
+  addDataFirebase = (data) => {
+    firestore()
+      .collection('customers')
+      .doc(`${data.username}`)
+      .set({
+        email: data.email,
+        name: data.username,
+        alamat: data.alamat,
+        photo: data.photo,
+      })
+      .then(() => {
+        console.log('User added!');
+      });
+  };
+
+  createUser = (user) => {
     auth()
-      .createUserWithEmailAndPassword(data.email, data.password)
+      .createUserWithEmailAndPassword(user.email, user.password)
+      .then(this.addDataFirebase(user))
       .then(() => {
         this.setState({
           user: {
-            email: data.email,
+            username: user.username,
           },
         });
         console.log('User account created & signed in!');
@@ -50,20 +70,67 @@ class Register extends Component {
   };
 
   handleTextEmail = (text) => {
+    const {password, username, alamat, photo} = this.state.user;
     this.setState({
       user: {
         email: text,
-        password: this.state.user.password,
+        password,
+        username,
+        alamat,
+        photo,
       },
     });
   };
 
   handleTextPassword = (text) => {
+    const {email, password, username, alamat, photo} = this.state.user;
+    this.setState({
+        user: {
+          email,
+          password: text,
+          username,
+          alamat,
+          photo,
+      },
+    });
+  };
+
+  handleTextUsername = (text) => {
+    const {email, password, username, alamat, photo} = this.state.user;
+    this.setState({
+        user: {
+          email,
+          password,
+          username: text,
+          alamat,
+          photo,
+      },
+    });
+  };
+
+  handleTextAlamat = (text) => {
+    const {email, password, username, alamat, photo} = this.state.user;
     this.setState({
       user: {
-        email: this.state.user.email,
-        password: text,
-      },
+          email,
+          password,
+          username,
+          alamat: text,
+          photo,
+        },
+    });
+  };
+
+  handleTextPhoto = (text) => {
+    const {email, password, username, alamat, photo} = this.state.user;
+    this.setState({
+        user: {
+          email,
+          password,
+          username,
+          alamat,
+          photo: text,
+        },
     });
   };
 
@@ -84,14 +151,26 @@ class Register extends Component {
                 valuet={this.state.user.password}
                 onChangeText={(text) => this.handleTextPassword(text)}></Input>
             </Item>
-            <Text>HI {this.state.user.email}</Text>
-            <Button
-              onPress={() =>
-                this.createUser({
-                  email: this.state.user.email,
-                  password: this.state.user.password,
-                })
-              }>
+            <Item floatingLabel>
+              <Label>Alamat</Label>
+              <Input
+                valuet={this.state.user.alamat}
+                onChangeText={(text) => this.handleTextAlamat(text)}></Input>
+            </Item>
+            <Item floatingLabel>
+              <Label>Username</Label>
+              <Input
+                valuet={this.state.user.username}
+                onChangeText={(text) => this.handleTextUsername(text)}></Input>
+            </Item>
+            <Item floatingLabel>
+              <Label>Photo URL</Label>
+              <Input
+                valuet={this.state.user.photo}
+                onChangeText={(text) => this.handleTextPhoto(text)}></Input>
+            </Item>
+            <Text>HI {this.state.user.username}</Text>
+            <Button onPress={() => this.createUser(this.state.user)}>
               <Text>REGISTER</Text>
             </Button>
           </Form>
