@@ -73,7 +73,7 @@ CustomDrawerContent = (props) => {
               <Text
                 style={{
                   color: '#ffff',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
                 }}>
                 {props.data.name.toUpperCase()}
               </Text>
@@ -90,12 +90,7 @@ CustomDrawerContent = (props) => {
         </Content>
       </Container>
       <DrawerItemList {...props} />
-      <Button
-      title="LOG OUT"
-      onPress={()=>props.setUserLogin()}
-      >
-
-      </Button>
+      <Button title="LOG OUT" onPress={() => props.setUserLogin()}></Button>
     </DrawerContentScrollView>
   );
 };
@@ -103,23 +98,31 @@ CustomDrawerContent = (props) => {
 export class NavBarOld extends Component {
   constructor(props) {
     super(props);
-
+    this.fecthingUserSQL();
+    this.fecthingCabangSQL();
+    this.fecthingOrdersSQL();
     this.state = {
       isLoggedIn: this.props.statusLogin,
-      userData:[]
+      userData: [],
     };
   }
 
-  fecthingUserSQL = () => {
+  fecthingUserSQL = async () => {
     const data = [];
-    this.props.sqlite.runQuery('SELECT * FROM user', []).then(([results]) => {
-      for (let i = 0; i < 100; i++) {
-        if (results.rows.item(i) !== undefined) {
-          data.push(results.rows.item(i));
+    await this.props.sqlite
+      .runQuery('SELECT * FROM user', [])
+      .then(([results]) => {
+        for (let i = 0; i < 10; i++) {
+          // console.log(results.rows.item(1) !== undefined)
+          if (results.rows.item(i) !== undefined) {
+            data.push(results.rows.item(i));
+          }
         }
-      }
-      this.props.setDataUSer(data);
-    });
+        this.props.setDataUSer(data);
+        // console.log(`data user`  + data);
+      });
+
+    return data;
   };
 
   fecthingCabangSQL = () => {
@@ -137,9 +140,11 @@ export class NavBarOld extends Component {
         }
         this.props.setDataCabang(data);
       })
-      .then(this.setState({
-        userData: data
-      }))
+      .then(
+        this.setState({
+          userData: data,
+        }),
+      )
       .catch((err) => console.log('tidak bisa fetching sql', err.message));
   };
 
@@ -197,7 +202,7 @@ export class NavBarOld extends Component {
                 // photo:
                 //   'https://cdn3.iconfinder.com/data/icons/avatar-color/64/52-512.png',
               }}
-              setUserLogin ={this.props.setStatusLogin}
+              setUserLogin={this.props.setStatusLogin}
             />
           )}
           drawerStyle={{

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {View, Text} from 'react-native';
-import {firebase} from '../../config';
+import {firebase, SQLiteContext} from '../../config';
 import {
   Container,
   Header,
@@ -13,8 +13,11 @@ import {
 } from 'native-base';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
+import { connect } from 'react-redux';
+import { setDataOrders, setDataCabang, setDataUser } from '../../actions';
+import { setLogin } from '../../actions/setLogin';
 
-class Register extends Component {
+class RegisterOld extends Component {
   constructor(props) {
     super(props);
 
@@ -29,10 +32,23 @@ class Register extends Component {
     };
   }
 
+  userNowSQLite = (dataNow) => {
+    const data = [];
+    this.props.sqlite.runQuery(`update user set username=${dataNow.username}, alamat=${dataNow.alamat}, photo=${dataNow.photo}`,  [])
+    .then(this.props.sqlite.runQuery(`select * from user`,  []))
+    .then(([results]) => {
+      for (let i = 0; i < 100; i++) {
+        if (results.rows.item(i) !== undefined) {
+          data.push(results.rows.item(i));
+        }
+      }
+      this.props.setDataUSer(data);
+    });
+  };
   addDataFirebase = (data) => {
     firestore()
       .collection('customers')
-      .doc(`${data.username}`)
+      .doc(`${data.email}`)
       .set({
         email: data.email,
         name: data.username,
@@ -48,6 +64,7 @@ class Register extends Component {
     auth()
       .createUserWithEmailAndPassword(user.email, user.password)
       .then(this.addDataFirebase(user))
+      .then(this.userNowSQLite(user))
       .then(() => {
         this.setState({
           user: {
@@ -85,12 +102,12 @@ class Register extends Component {
   handleTextPassword = (text) => {
     const {email, password, username, alamat, photo} = this.state.user;
     this.setState({
-        user: {
-          email,
-          password: text,
-          username,
-          alamat,
-          photo,
+      user: {
+        email,
+        password: text,
+        username,
+        alamat,
+        photo,
       },
     });
   };
@@ -98,12 +115,12 @@ class Register extends Component {
   handleTextUsername = (text) => {
     const {email, password, username, alamat, photo} = this.state.user;
     this.setState({
-        user: {
-          email,
-          password,
-          username: text,
-          alamat,
-          photo,
+      user: {
+        email,
+        password,
+        username: text,
+        alamat,
+        photo,
       },
     });
   };
@@ -112,25 +129,25 @@ class Register extends Component {
     const {email, password, username, alamat, photo} = this.state.user;
     this.setState({
       user: {
-          email,
-          password,
-          username,
-          alamat: text,
-          photo,
-        },
+        email,
+        password,
+        username,
+        alamat: text,
+        photo,
+      },
     });
   };
 
   handleTextPhoto = (text) => {
     const {email, password, username, alamat, photo} = this.state.user;
     this.setState({
-        user: {
-          email,
-          password,
-          username,
-          alamat,
-          photo: text,
-        },
+      user: {
+        email,
+        password,
+        username,
+        alamat,
+        photo: text,
+      },
     });
   };
 
@@ -180,4 +197,25 @@ class Register extends Component {
   }
 }
 
-export default Register;
+const mapStateToProps = (state) => ({
+  statusLogin: state.auth.isLoggedin,
+  dataUser: state.userData.dataUser,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setStatusLogin: () => dispatch(setLogin()),
+  setDataUSer: (payload) => dispatch(setDataUser(payload)),
+  setDataCabang: (payload) => dispatch(setDataCabang(payload)),
+  setDataOrders: (payload) => dispatch(setDataOrders(payload)),
+});
+
+class Register extends Component {
+  render() {
+    return (
+      <SQLiteContext.Consumer>
+        {(sqlite) => <RegisterOld {...this.props} sqlite={sqlite} />}
+      </SQLiteContext.Consumer>
+    );
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Register);

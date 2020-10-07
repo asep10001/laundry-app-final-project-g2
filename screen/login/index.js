@@ -1,6 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import {setLogin} from '../../actions';
+import {
+  setLogin,
+  setDataUser,
+  setDataCabang,
+  setDataOrders,
+} from '../../actions';
 import auth from '@react-native-firebase/auth';
 import {
   Container,
@@ -13,8 +18,10 @@ import {
   Button,
   Text,
 } from 'native-base';
+import {SQLiteContext} from '../../config';
+import firestore from '@react-native-firebase/firestore';
 
-class Login extends Component {
+class LoginOld extends Component {
   constructor(props) {
     super(props);
 
@@ -23,8 +30,39 @@ class Login extends Component {
         email: '',
         password: '',
       },
+      userNow: {},
     };
   }
+
+  subcriber = async (collection, document) => {
+    const custDocument = await firestore()
+      .collection(collection)
+      .doc(document)
+      .get();
+    console.log('user now ' + custDocument.data());
+
+    this.setState({
+      userNow: custDocument.data(),
+    });
+    this.userNowSQLite(custDocument.data());
+  };
+  userNowSQLite = async (dataNow) => {
+    console.log('datanow ' + JSON.stringify(dataNow));
+    const data = [];
+    await this.props.sqlite.runQuery(
+      `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}' where id='1'`,
+      [],
+    );
+    this.props.sqlite.runQuery(`select * from user`, []).then(([results]) => {
+      console.log(results.rows.item(0));
+      for (let i = 0; i < 100; i++) {
+        if (results.rows.item(i) !== undefined) {
+          data.push(results.rows.item(i));
+        }
+      }
+      this.props.setDataUSer(data);
+    });
+  };
 
   handleTextEmail = (text) => {
     this.setState({
@@ -46,12 +84,12 @@ class Login extends Component {
 
   signIn = (data) => {
     auth()
-      .signInWithEmailAndPassword(
-        data.email,
-        data.password,
-      )
+      .signInWithEmailAndPassword(data.email, data.password)
       .then(() => {
-        this.props.setStatusLogin()
+        this.subcriber('customers', data.email);
+      })
+      .then(() => {
+        this.props.setStatusLogin();
         console.log('User signed in!');
       })
       .catch((error) => {
@@ -84,9 +122,14 @@ class Login extends Component {
                 onChangeText={(text) => this.handleTextPassword(text)}></Input>
             </Item>
             <Item>
-              <Button title="LOGIN" onPress={()=>{
-                  this.signIn({email: this.state.user.email, password: this.state.user.password})                  
-                  }}>
+              <Button
+                title="LOGIN"
+                onPress={() => {
+                  this.signIn({
+                    email: this.state.user.email,
+                    password: this.state.user.password,
+                  });
+                }}>
                 <Text>Log In</Text>
               </Button>
             </Item>
@@ -99,10 +142,23 @@ class Login extends Component {
 
 const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
+  dataUser: state.userData.dataUser,
 });
 
 const mapDispatchToProps = (dispatch) => ({
   setStatusLogin: () => dispatch(setLogin()),
+  setDataUSer: (payload) => dispatch(setDataUser(payload)),
+  setDataCabang: (payload) => dispatch(setDataCabang(payload)),
+  setDataOrders: (payload) => dispatch(setDataOrders(payload)),
 });
 
+class Login extends Component {
+  render() {
+    return (
+      <SQLiteContext.Consumer>
+        {(sqlite) => <LoginOld {...this.props} sqlite={sqlite} />}
+      </SQLiteContext.Consumer>
+    );
+  }
+}
 export default connect(mapStateToProps, mapDispatchToProps)(Login);

@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
-import {firebase} from '../../config'
 import { View, Text } from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 
 export class Home extends Component {
   constructor(props) {
     super(props);
     this.getUser()
-    this.subcriber = firebase.firestore().collection('customers').doc('8pfLRdJ6EDAJpJBy13Ee').onSnapshot(
+    this.subcriber = firestore().collection('customers').doc('Cecep').onSnapshot(
         doc => {
             this.setState({
                 user: {
-                    name : doc.data().nama
+                    name : doc.data().name
                 }
             })
         }
