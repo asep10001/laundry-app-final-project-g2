@@ -38,7 +38,7 @@ class Orders extends Component {
   serviceOption = () => {
     return (
       <>
-        <TouchableOpacity onPress={() => alert('hi')}>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')}>
           <Card>
             <CardItem cardBody>
               <ImageBackground

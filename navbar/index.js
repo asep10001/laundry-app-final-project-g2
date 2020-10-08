@@ -214,7 +214,12 @@ export class NavBarOld extends Component {
           <Drawer.Screen name="Home">
             {(props) => <Home {...props} />}
           </Drawer.Screen>
-          <Drawer.Screen name="Orders" component={Orders} />
+          <Drawer.Screen name="Orders" >
+            {(props) => <Orders {...props} />}
+          </Drawer.Screen>
+          <Drawer.Screen name="Orders" >
+            {(props) => <Orders {...props} />}
+          </Drawer.Screen>
         </Drawer.Navigator>
       </>
     );
