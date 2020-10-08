@@ -13,6 +13,7 @@ import {
   Button,
 } from 'native-base';
 import {connect} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
 
 class StatusOrderOld extends Component {
   constructor(props) {
@@ -22,44 +23,52 @@ class StatusOrderOld extends Component {
     this.state = {
       data: [],
       isPaid: false,
+      index: 0,
     };
   }
 
-
-
   addOrderFirebase = (data) => {
-    firestore()
-      .collection('transactions')
-      .doc(`${data.email}`)
-      .set({
-        email: data.email,
-        name: data.username,
-        alamat: data.alamat,
-        photo: data.photo,
-      })
-      .then(() => {
-        console.log('User added!');
-      });
+    var order = '';
+    for (let i = 0; i < data.length; i++) {
+      order = 'order' + i;
+      firestore()
+        .collection('transactions')
+        .doc(`${data[i].email}`)
+        .collection('orders')
+        .doc(`order${data[i].id}`)
+        .set({
+          order: `{
+          "branch": "${data[i].branch}",
+          "cost": "${data[i].cost}",
+         "duration": "${data[i].duration}",
+          "item_weigh": "${data[i].item_weigh}",
+          "service": "${data[i].services}",
+          "status": "pending"}`,
+        })
+        .then(() => {
+          console.log('Order added!');
+        });
+    }
   };
 
-//   fetchingSQLite = async () => {
-//     const data = [];
-//     await this.props.sqlite
-//       .runQuery(
-//         `select * from orders where email='${this.props.dataUser[0].email}'`,
-//         [],
-//       )
-//       .then(([results]) => {
-//         for (let i = 0; i < 100; i++) {
-//           if (results.rows.item(i) !== undefined) {
-//             data.push(results.rows.item(i));
-//           }
-//         }
-//       });
-//     this.setState({
-//       data,
-//     });
-//   };
+  //   fetchingSQLite = async () => {
+  //     const data = [];
+  //     await this.props.sqlite
+  //       .runQuery(
+  //         `select * from orders where email='${this.props.dataUser[0].email}'`,
+  //         [],
+  //       )
+  //       .then(([results]) => {
+  //         for (let i = 0; i < 100; i++) {
+  //           if (results.rows.item(i) !== undefined) {
+  //             data.push(results.rows.item(i));
+  //           }
+  //         }
+  //       });
+  //     this.setState({
+  //       data,
+  //     });
+  //   };
   componentDidMount() {
     // this.fetchingSQLite();
   }
@@ -117,7 +126,6 @@ class StatusOrderOld extends Component {
               </Right>
             </ListItem>
           </List>
-          {this.isPaid()}
         </Content>,
       );
     }
@@ -133,8 +141,7 @@ class StatusOrderOld extends Component {
       );
     } else {
       return (
-        <Button
-          onPress={() => alert(JSON.stringify(this.props.dataOrder))}>
+        <Button onPress={() => this.addOrderFirebase(this.props.dataOrder)}>
           <Text>BAYAR</Text>
         </Button>
       );
@@ -143,7 +150,10 @@ class StatusOrderOld extends Component {
   render() {
     return (
       <Container>
-        <Content>{this.screenShow()}</Content>
+        <Content>
+          {this.screenShow()}
+          {this.isPaid()}
+        </Content>
       </Container>
     );
   }
@@ -152,7 +162,7 @@ class StatusOrderOld extends Component {
 const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
-  dataOrder: state.orders.orders
+  dataOrder: state.orders.orders,
 });
 
 const mapDispatchToProps = (dispatch) => ({
