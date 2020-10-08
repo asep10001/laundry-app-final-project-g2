@@ -19,6 +19,8 @@ import {
   Label,
   Form,
   Picker,
+  List,
+  ListItem,
 } from 'native-base';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
@@ -100,7 +102,6 @@ class Orders extends Component {
                 {loopingpicker()}
               </Picker>
             </Form>
-
             <Form>
               <Label>Durasi Pengerjaan</Label>
               <Picker
@@ -111,28 +112,70 @@ class Orders extends Component {
                 <Picker.Item label="Kilat" value="2000" />
               </Picker>
             </Form>
-
             <Form>
               <Label>Total Biaya</Label>
               <Input disabled value={this.state.selected.cost}></Input>
             </Form>
+          
+              <Content>
+                <List>
+                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                    <Left>
+                      <Text>CABANG</Text>
+                    </Left>
+                    <Right>
+                    <Text>{this.props.orderBranch.toUpperCase()}</Text>
+                    </Right>
+                  </ListItem>
 
-            <View>
-              <Text>
-                {this.props.orderBranch}
-                {this.props.orderServices}
-                {this.props.orderCost}
-                {this.props.orderItemWeigh}
-                {this.props.orderDuration}
-                {this.props.servicesCost}
-                berat sekarang
-                {this.state.selected.item_weigh}
-                durasi sekarang
-                {this.state.selected.duration}
-                harga sekarang
-                {this.state.selected.cost}
-              </Text>
-            </View>
+                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                    <Left>
+                      <Text>SERVICE</Text>
+                    </Left>
+                    <Right>
+                    <Text>{this.props.orderServices.toUpperCase()}</Text>
+                    </Right>
+                  </ListItem>
+
+                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                    <Left>
+                      <Text>BERAT BARANG</Text>
+                    </Left>
+                    <Right>
+                    <Text>{this.state.selected.item_weigh}KG</Text>
+                    </Right>
+                  </ListItem>
+
+                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                    <Left>
+                      <Text>DURASI PENGIRIMAN</Text>
+                    </Left>
+                    <Right>
+                    {this.state.selected.duration === 1000 ?
+                  <Text>KILAT</Text> : <Text>REGULER</Text>
+                  }
+                    </Right>
+                  </ListItem>
+
+                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                    <Left>
+                      <Text>TOTAL BAYAR</Text>
+                    </Left>
+                    <Right>
+                    <Text>{this.state.selected.cost}</Text>
+                    </Right>
+                  </ListItem>
+                </List>
+              </Content>
+            {/* {this.props.orderBranch}
+            {this.props.orderServices}
+            {this.props.orderCost}
+            {this.props.orderItemWeigh}
+            {this.props.orderDuration}
+            {this.props.servicesCost}
+            {this.state.selected.item_weigh}
+            {this.state.selected.duration}
+            {this.state.selected.cost} */}
           </Content>
         </Container>
       </>
