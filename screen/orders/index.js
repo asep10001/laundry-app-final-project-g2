@@ -95,9 +95,6 @@ class Orders extends Component {
               <Label>Berat Item (Maks 10 Kg)</Label>
               <Picker
                 mode="dropdown"
-                placeholder="Select your SIM"
-                placeholderStyle={{color: '#bfc6ea'}}
-                placeholderIconColor="#007aff"
                 selectedValue={this.state.selected.item_weigh}
                 onValueChange={(value) => this.onItemWeighChange(value)}>
                 {loopingpicker()}
@@ -108,13 +105,10 @@ class Orders extends Component {
               <Label>Durasi Pengerjaan</Label>
               <Picker
                 mode="dropdown"
-                placeholder="Select your SIM"
-                placeholderStyle={{color: '#bfc6ea'}}
-                placeholderIconColor="#007aff"
                 selectedValue={this.state.selected.duration}
                 onValueChange={this.onDurationChange.bind(this)}>
-                <Picker.Item label="1" value="1000" />
-                <Picker.Item label="3" value="2000" />
+                <Picker.Item label="Reguler" value="1000" />
+                <Picker.Item label="Kilat" value="2000" />
               </Picker>
             </Form>
 
