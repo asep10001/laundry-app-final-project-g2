@@ -3,7 +3,8 @@ const initialState = {
     id: 1,
     username: 'Asep Agus Heri Hermawan',
     alamat: 'jakarta selatan',
-    photo: 'https://cdn3.iconfinder.com/data/icons/avatar-color/64/52-512.png'
+    photo: 'https://cdn3.iconfinder.com/data/icons/avatar-color/64/52-512.png',
+    email: 'asep@example.com'
   }],
 };
 

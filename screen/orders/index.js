@@ -26,7 +26,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {Col, Row, Grid} from 'react-native-easy-grid';
 import {connect} from 'react-redux';
-import {setLogin, setDataUser} from '../../actions';
+import {setLogin, setDataUser, setDataOrders} from '../../actions';
 
 import {Input} from 'react-native-elements';
 import {SQLiteContext} from '../../config';
@@ -75,9 +75,10 @@ class OrdersOld extends Component {
     //   alert(JSON.stringify(data));
     // } else {
     await this.props.sqlite.runQuery(
-      `insert into orders values (?, ?, ?, ?, ?, ?)`,
+      `insert into orders values (?, ?, ?, ?, ?, ?, ?)`,
       [
-        data.length.toString(),
+        (data.length + 1).toString(),
+        this.props.dataUser[0].email.toString(),
         this.props.orderBranch.toString(),
         this.state.selected.item_weigh.toString(),
         this.state.selected.cost.toString(),
@@ -88,20 +89,22 @@ class OrdersOld extends Component {
         ).toString(),
       ],
     );
+    const filterData = []
     await this.props.sqlite
-      .runQuery(`select * from orders`, [])
+      .runQuery(`select * from orders where email='${this.props.dataUser[0].email}'`, [])
       .then(([results]) => {
         for (let i = 0; i < 100; i++) {
           if (results.rows.item(i) !== undefined) {
-            data.push(results.rows.item(i));
+            filterData.push(results.rows.item(i));
           }
         }
+        // alert(JSON.stringify(data))
       });
 
-    alert(JSON.stringify(data));
+    alert(JSON.stringify(filterData));
+    this.props.setDataOrders(filterData)
     // }
   };
-  
 
   onItemWeighChange = async (value) => {
     const {item_weigh, duration, cost} = this.state.selected;

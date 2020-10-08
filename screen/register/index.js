@@ -32,9 +32,9 @@ class RegisterOld extends Component {
     };
   }
 
-  userNowSQLite = (dataNow) => {
+  userNowSQLite = async (dataNow) => {
     const data = [];
-    this.props.sqlite.runQuery(`update user set username=${dataNow.username}, alamat=${dataNow.alamat}, photo=${dataNow.photo}`,  [])
+    await this.props.sqlite.runQuery(`update user set username=${dataNow.username}, alamat=${dataNow.alamat}, photo=${dataNow.photo}, email=${dataNow.email}`,  [])
     .then(this.props.sqlite.runQuery(`select * from user`,  []))
     .then(([results]) => {
       for (let i = 0; i < 100; i++) {

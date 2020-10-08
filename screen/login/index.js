@@ -104,10 +104,10 @@ class LoginOld extends Component {
   };
 
   userNowSQLite = async (dataNow) => {
-    // console.log('datanow ' + JSON.stringify(dataNow));
+    console.log('datanow ' + JSON.stringify(dataNow));
     const data = [];
     await this.props.sqlite.runQuery(
-      `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}' where id='1'`,
+      `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}', email='${dataNow.email}' where id='1'`,
       [],
     );
     this.cabangSubcriber('branch', dataNow.alamat);
