@@ -30,6 +30,7 @@ import {
   Orders,
   ServiceOptions,
   OtherOptions,
+  StatusOrder,
 } from '../screen';
 import {SQLiteContext} from '../config';
 import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
@@ -246,6 +247,11 @@ export class NavBarOld extends Component {
                 setOrdersDuration={this.setOrdersDuration}
                 setServicesCost={this.setServicesCost}
               />
+            )}
+          </Drawer.Screen>
+          <Drawer.Screen name="Pesanan Saya">
+            {(porps)=>(
+              <StatusOrder/>
             )}
           </Drawer.Screen>
         </Drawer.Navigator>

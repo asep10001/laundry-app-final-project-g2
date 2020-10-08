@@ -101,6 +101,7 @@ class OrdersOld extends Component {
     alert(JSON.stringify(data));
     // }
   };
+  
 
   onItemWeighChange = async (value) => {
     const {item_weigh, duration, cost} = this.state.selected;
