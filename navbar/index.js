@@ -23,7 +23,14 @@ import {connect} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import {setLogin, setDataUser, setDataCabang, setDataOrders} from '../actions';
-import {Home, Register, Login, Orders, ServiceOptions, OtherOptions} from '../screen';
+import {
+  Home,
+  Register,
+  Login,
+  Orders,
+  ServiceOptions,
+  OtherOptions,
+} from '../screen';
 import {SQLiteContext} from '../config';
 import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
 
@@ -104,6 +111,14 @@ export class NavBarOld extends Component {
     this.state = {
       isLoggedIn: this.props.statusLogin,
       userData: [],
+      servicesCost: 0,
+      orders: {
+        branch: 'kemang',
+        cost: '10000',
+        duration: 3,
+        item_weigh: 1,
+        services: 'setrika',
+      },
     };
   }
 
@@ -214,11 +229,24 @@ export class NavBarOld extends Component {
           <Drawer.Screen name="Home">
             {(props) => <Home {...props} />}
           </Drawer.Screen>
-          <Drawer.Screen name="Orders" >
-            {(props) => <Orders {...props} />}
-          </Drawer.Screen>
-          <Drawer.Screen name="Other Options" >
-            {(props) => <OtherOptions {...props} />}
+          <Drawer.Screen name="Orders">
+            {(props) => (
+              <Orders
+                {...props}
+                orderServices={this.state.orders.services}
+                orderItemWeigh={this.state.orders.item_weigh}
+                orderDuration={this.state.orders.duration}
+                orderCost={this.state.orders.cost}
+                orderBranch={this.state.orders.branch}
+                servicesCost={this.state.servicesCost}
+                setOrdersServices={this.setOrdersServices}
+                setOrdersBranch={this.setOrdersBranch}
+                setOrdersCost={this.setOrdersCost}
+                setOrdersItemWeigh={this.setOrdersItemWeigh}
+                setOrdersDuration={this.setOrdersDuration}
+                setServicesCost={this.setServicesCost}
+              />
+            )}
           </Drawer.Screen>
         </Drawer.Navigator>
       </>
@@ -236,6 +264,78 @@ export class NavBarOld extends Component {
       </Drawer.Navigator>
     );
   };
+
+  setOrdersBranch = (data) => {
+    const {cost, duration, item_weigh, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch: data,
+        cost,
+        duration,
+        item_weigh,
+        services,
+      },
+    });
+  };
+
+  setServicesCost = (data) => {
+    this.setState({
+      servicesCost: data
+    })
+  };
+
+  setOrdersServices = (data) => {
+    const {branch, cost, duration, item_weigh} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost,
+        duration,
+        item_weigh,
+        services: data,
+      },
+    });
+  };
+
+  setOrdersDuration = (data) => {
+    const {branch, cost, item_weigh, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost,
+        duration : data,
+        item_weigh,
+        services,
+      },
+    });
+  };
+
+  setOrdersCost = (data) => {
+    const {branch, duration, item_weigh, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost : data,
+        duration,
+        item_weigh,
+        services,
+      },
+    });
+  };
+
+  setOrdersItemWeigh = (data) => {
+    const {branch, cost, duration, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost,
+        duration,
+        item_weigh : data,
+        services,
+      },
+    });
+  };
+
 
   render() {
     return (

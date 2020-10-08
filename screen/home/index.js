@@ -20,13 +20,7 @@ export class Home extends Component {
       user: {
         name: '',
       },
-      orders: {
-        branch: 'kemang',
-        cost: '10000',
-        duration: 3,
-        item_weigh: 1,
-        services: 'setrika',
-      },
+
     };
   }
 

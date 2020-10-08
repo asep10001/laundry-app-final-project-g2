@@ -13,6 +13,12 @@ import {
   Left,
   Body,
   Right,
+  View,
+  Accordion,
+  Title,
+  Label,
+  Form,
+  Picker,
 } from 'native-base';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
@@ -20,12 +26,21 @@ import {Col, Row, Grid} from 'react-native-easy-grid';
 import {connect} from 'react-redux';
 import {setLogin, setDataUser} from '../../actions';
 
+import {Input} from 'react-native-elements';
+
 class Orders extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       isBranchChosen: false,
+      isServicesChosen: false,
+      selected: {
+        item_weigh: undefined,
+        duration: undefined,
+        cost: undefined,
+      },
+      costNow: this.props.orderCost,
     };
   }
 
@@ -35,10 +50,111 @@ class Orders extends Component {
     // )
   }
 
+  onItemWeighChange = async (value) => {
+    const {item_weigh, duration, cost} = this.state.selected;
+    let costNow = this.state.costNow;
+    await this.setState({
+      selected: {
+        item_weigh: value,
+        duration,
+        cost: (parseInt(costNow) * value).toString(),
+      },
+    });
+
+    console.log(parseInt(costNow) * value);
+  };
+
+  onDurationChange = (value) => {
+    const {item_weigh, duration, cost} = this.state.selected;
+    let costNow = this.props.orderCost;
+    let hitung = 
+      (parseInt(item_weigh) * parseInt(value)).toString();
+    let hitungBerat = (parseInt(item_weigh) * parseInt(costNow)).toString();
+
+    this.setState({
+      selected: {
+        item_weigh,
+        duration: value,
+        cost : (parseInt(hitung) + parseInt(hitungBerat)).toString(),
+      },
+      costNow: (parseInt(value) + parseInt(costNow)).toString(),
+    });
+  };
+
+  otherServicesOptions = () => {
+    const loopingpicker = () => {
+      const picker = [];
+      for (let i = 1; i < 11; i++) {
+        picker.push(<Picker.Item key={i} label={i.toString()} value={i} />);
+      }
+      return picker;
+    };
+    return (
+      <>
+        <Container>
+          <Content>
+            <Form>
+              <Label>Berat Item (Maks 10 Kg)</Label>
+              <Picker
+                mode="dropdown"
+                placeholder="Select your SIM"
+                placeholderStyle={{color: '#bfc6ea'}}
+                placeholderIconColor="#007aff"
+                selectedValue={this.state.selected.item_weigh}
+                onValueChange={(value) => this.onItemWeighChange(value)}>
+                {loopingpicker()}
+              </Picker>
+            </Form>
+
+            <Form>
+              <Label>Durasi Pengerjaan</Label>
+              <Picker
+                mode="dropdown"
+                placeholder="Select your SIM"
+                placeholderStyle={{color: '#bfc6ea'}}
+                placeholderIconColor="#007aff"
+                selectedValue={this.state.selected.duration}
+                onValueChange={this.onDurationChange.bind(this)}>
+                <Picker.Item label="1" value="1000" />
+                <Picker.Item label="3" value="2000" />
+              </Picker>
+            </Form>
+
+            <Form>
+              <Label>Total Biaya</Label>
+              <Input disabled value={this.state.selected.cost}></Input>
+            </Form>
+
+            <View>
+              <Text>
+                {this.props.orderBranch}
+                {this.props.orderServices}
+                {this.props.orderCost}
+                {this.props.orderItemWeigh}
+                {this.props.orderDuration}
+                {this.props.servicesCost}
+              </Text>
+            </View>
+          </Content>
+        </Container>
+      </>
+    );
+  };
+
   serviceOption = () => {
     return (
       <>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate('Home')}>
+        <TouchableOpacity
+          onPress={async () => {
+            await this.setState({
+              isServicesChosen: true,
+              service: 'setrika',
+              servicesCost: 10000,
+            });
+            this.props.setOrdersServices(this.state.service);
+            this.props.setServicesCost(this.state.servicesCost);
+            alert(this.state.service);
+          }}>
           <Card>
             <CardItem cardBody>
               <ImageBackground
@@ -60,7 +176,7 @@ class Orders extends Component {
                 </Button>
               </Body>
               <Right>
-                <Text>Rp. 1000</Text>
+                <Text>Rp. 10000</Text>
               </Right>
             </CardItem>
           </Card>
@@ -122,7 +238,10 @@ class Orders extends Component {
       cards.push(
         <TouchableOpacity
           key={index}
-          onPress={() => this.setState({isBranchChosen: true})}>
+          onPress={() => {
+            this.setState({isBranchChosen: true});
+            this.props.setOrdersBranch(item.branch);
+          }}>
           <Card>
             <CardItem cardBody>
               <ImageBackground
@@ -150,7 +269,21 @@ class Orders extends Component {
     return cards;
   };
 
-  loopingUser = () => {};
+  screenShown = () => {
+    if (
+      this.state.isBranchChosen === true &&
+      this.state.isServicesChosen === false
+    ) {
+      return this.serviceOption();
+    } else if (
+      this.state.isBranchChosen === true &&
+      this.state.isServicesChosen === true
+    ) {
+      return this.otherServicesOptions();
+    } else {
+      return this.branchOptions();
+    }
+  };
 
   render() {
     return (
@@ -188,25 +321,27 @@ class Orders extends Component {
               </Col>
             </Grid>
           </Content>
-          {this.state.isBranchChosen
+          {this.screenShown()}
+          {/* {this.state.isBranchChosen
             ? this.serviceOption()
             : this.branchOptions()}
+          {this.state.isServicesChosen
+            ? this.otherServicesOptions()
+            : this.serviceOption()} */}
         </Content>
         {this.state.isBranchChosen ? (
           <>
-            <Button style={{
-              width: "100%",
-              justifyContent:'center',
-              alignItems: 'center'
-            }}
-            onPress={()=>this.setState({isBranchChosen: false})}
-            >
+            <Button
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              onPress={() => this.setState({isBranchChosen: false})}>
               <Text>KEMBALI MEMILIH CABANG</Text>
             </Button>
           </>
-        ) : (
-          null
-        )}
+        ) : null}
       </Container>
     );
   }
