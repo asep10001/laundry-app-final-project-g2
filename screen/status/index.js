@@ -25,9 +25,7 @@ class StatusOrderOld extends Component {
     };
   }
 
-  componentDidMount() {
-    console.log('tes');
-  }
+
 
   addOrderFirebase = (data) => {
     firestore()

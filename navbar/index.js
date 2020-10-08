@@ -168,7 +168,7 @@ export class NavBarOld extends Component {
     let data = [];
     this.props.sqlite
       .runQuery(
-        'SELECT orders.item_weigh, orders.cost, orders.services , orders.duration FROM orders JOIN user ON user.id = orders.userId',
+        `select * from orders where email='${this.props.dataUser[0].email}'`,
         [],
       )
       .then(([results]) => {
@@ -198,7 +198,7 @@ export class NavBarOld extends Component {
   componentDidMount() {
     this.fecthingUserSQL();
     this.fecthingCabangSQL();
-    this.fecthingOrdersSQL();
+    // this.fecthingOrdersSQL();
   }
 
   userLoggedin = () => {

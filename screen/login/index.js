@@ -72,22 +72,23 @@ class LoginOld extends Component {
     // console.log('datanow ' + JSON.stringify(dataNow));
     const data = [];
     for (let i = 0; i < dataNow.length; i++) {
-      this.props.sqlite.runQuery(
-        ' insert into branch values (?, ?, ?, ?)',
-        [
-          i + 1,
-          dataNow[i].alamat,
-          dataNow[i].branch,
-          dataNow[i].photo,
-        ],
-        [],
-      ).then(()=>console.info('successfully inserting data cabang'))
-      .catch(err => {
-        this.props.sqlite.runQuery(
-            `update branch set id='${i+1}', alamat='${dataNow[i].alamat}', branch='${dataNow[i].branch}', photo='${dataNow[i].photo}' where id='${i+1}'`,
+      this.props.sqlite
+        .runQuery(
+          ' insert into branch values (?, ?, ?, ?)',
+          [i + 1, dataNow[i].alamat, dataNow[i].branch, dataNow[i].photo],
+          [],
+        )
+        .then(() => console.info('successfully inserting data cabang'))
+        .catch((err) => {
+          this.props.sqlite.runQuery(
+            `update branch set id='${i + 1}', alamat='${
+              dataNow[i].alamat
+            }', branch='${dataNow[i].branch}', photo='${
+              dataNow[i].photo
+            }' where id='${i + 1}'`,
             [],
-          )
-      })
+          );
+        });
       console.log(i);
       continue;
     }
@@ -104,12 +105,14 @@ class LoginOld extends Component {
   };
 
   userNowSQLite = async (dataNow) => {
-    console.log('datanow ' + JSON.stringify(dataNow));
+    // console.log('datanow ' + JSON.stringify(dataNow));
     const data = [];
     await this.props.sqlite.runQuery(
       `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}', email='${dataNow.email}' where id='1'`,
       [],
     );
+    await this.orderUserSQLite();
+
     this.cabangSubcriber('branch', dataNow.alamat);
     this.props.sqlite.runQuery(`select * from user`, []).then(([results]) => {
       console.log(results.rows.item(0));
@@ -122,6 +125,24 @@ class LoginOld extends Component {
     });
   };
 
+  orderUserSQLite = async () => {
+     console.log(this.state.user.email)
+    const filterData = [];
+    await this.props.sqlite
+      .runQuery(
+        `select * from orders where email='${this.state.user.email}'`,
+        [],
+      )
+      .then(([results]) => {
+        for (let i = 0; i < 100; i++) {
+          if (results.rows.item(i) !== undefined) {
+            filterData.push(results.rows.item(i));
+          }
+        }
+        this.props.setDataOrders(filterData);
+        // alert(this.props.dataOrder)
+      });
+  };
   handleTextEmail = (text) => {
     this.setState({
       user: {
@@ -202,6 +223,7 @@ class LoginOld extends Component {
 const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
+  dataOrder: state.orders.orders
 });
 
 const mapDispatchToProps = (dispatch) => ({
