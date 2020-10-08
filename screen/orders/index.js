@@ -29,8 +29,9 @@ import {connect} from 'react-redux';
 import {setLogin, setDataUser} from '../../actions';
 
 import {Input} from 'react-native-elements';
+import {SQLiteContext} from '../../config';
 
-class Orders extends Component {
+class OrdersOld extends Component {
   constructor(props) {
     super(props);
 
@@ -48,6 +49,58 @@ class Orders extends Component {
   }
 
   componentDidMount() {}
+
+  addOrderToSQLite = async () => {
+    const data = [];
+    await this.props.sqlite
+      .runQuery(`select * from orders`, [])
+      .then(([results]) => {
+        for (let i = 0; i < 100; i++) {
+          if (results.rows.item(i) !== undefined) {
+            data.push(results.rows.item(i));
+          }
+        }
+      });
+    // if (data.length !== 0) {
+    //   await this.props.sqlite.runQuery(
+    //     `update orders set branch='${this.props.orderBranch}', item_weigh='${
+    //       this.state.selected.item_weigh
+    //     }', cost='${this.state.selected.cost}', services='${
+    //       this.props.orderServices
+    //     }', duration='${
+    //       this.state.selected.duration === '1000' ? 'REGULER' : 'KILAT'
+    //     }' where id='${data.length}'`,
+    //     [],
+    //   );
+    //   alert(JSON.stringify(data));
+    // } else {
+    await this.props.sqlite.runQuery(
+      `insert into orders values (?, ?, ?, ?, ?, ?)`,
+      [
+        data.length.toString(),
+        this.props.orderBranch.toString(),
+        this.state.selected.item_weigh.toString(),
+        this.state.selected.cost.toString(),
+        this.props.orderServices.toString(),
+        (this.state.selected.duration === '1000'
+          ? 'REGULER'
+          : 'KILAT'
+        ).toString(),
+      ],
+    );
+    await this.props.sqlite
+      .runQuery(`select * from orders`, [])
+      .then(([results]) => {
+        for (let i = 0; i < 100; i++) {
+          if (results.rows.item(i) !== undefined) {
+            data.push(results.rows.item(i));
+          }
+        }
+      });
+
+    alert(JSON.stringify(data));
+    // }
+  };
 
   onItemWeighChange = async (value) => {
     const {item_weigh, duration, cost} = this.state.selected;
@@ -116,57 +169,65 @@ class Orders extends Component {
               <Label>Total Biaya</Label>
               <Input disabled value={this.state.selected.cost}></Input>
             </Form>
-          
-              <Content>
-                <List>
-                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
-                    <Left>
-                      <Text>CABANG</Text>
-                    </Left>
-                    <Right>
+
+            <Content>
+              <List>
+                <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                  <Left>
+                    <Text>CABANG</Text>
+                  </Left>
+                  <Right>
                     <Text>{this.props.orderBranch.toUpperCase()}</Text>
-                    </Right>
-                  </ListItem>
+                  </Right>
+                </ListItem>
 
-                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
-                    <Left>
-                      <Text>SERVICE</Text>
-                    </Left>
-                    <Right>
+                <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                  <Left>
+                    <Text>SERVICE</Text>
+                  </Left>
+                  <Right>
                     <Text>{this.props.orderServices.toUpperCase()}</Text>
-                    </Right>
-                  </ListItem>
+                  </Right>
+                </ListItem>
 
-                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
-                    <Left>
-                      <Text>BERAT BARANG</Text>
-                    </Left>
-                    <Right>
+                <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                  <Left>
+                    <Text>BERAT BARANG</Text>
+                  </Left>
+                  <Right>
                     <Text>{this.state.selected.item_weigh}KG</Text>
-                    </Right>
-                  </ListItem>
+                  </Right>
+                </ListItem>
 
-                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
-                    <Left>
-                      <Text>DURASI PENGIRIMAN</Text>
-                    </Left>
-                    <Right>
-                    {this.state.selected.duration === 1000 ?
-                  <Text>KILAT</Text> : <Text>REGULER</Text>
-                  }
-                    </Right>
-                  </ListItem>
+                <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                  <Left>
+                    <Text>DURASI PENGIRIMAN</Text>
+                  </Left>
+                  <Right>
+                    {this.state.selected.duration === '1000' ? (
+                      <Text>REGULER</Text>
+                    ) : (
+                      <Text>KILAT</Text>
+                    )}
+                  </Right>
+                </ListItem>
 
-                  <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
-                    <Left>
-                      <Text>TOTAL BAYAR</Text>
-                    </Left>
-                    <Right>
+                <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
+                  <Left>
+                    <Text>TOTAL BAYAR</Text>
+                  </Left>
+                  <Right>
                     <Text>{this.state.selected.cost}</Text>
-                    </Right>
-                  </ListItem>
-                </List>
-              </Content>
+                  </Right>
+                </ListItem>
+              </List>
+            </Content>
+            <Content>
+              <Button onPress={() => this.addOrderToSQLite()}>
+                <Text>BAYAR</Text>
+              </Button>
+            </Content>
+
             {/* {this.props.orderBranch}
             {this.props.orderServices}
             {this.props.orderCost}
@@ -443,4 +504,13 @@ const mapDispatchToProps = (dispatch) => ({
   setDataOrders: (payload) => dispatch(setDataOrders(payload)),
 });
 
+class Orders extends Component {
+  render() {
+    return (
+      <SQLiteContext.Consumer>
+        {(sqlite) => <OrdersOld {...this.props} sqlite={sqlite} />}
+      </SQLiteContext.Consumer>
+    );
+  }
+}
 export default connect(mapStateToProps, mapDispatchToProps)(Orders);
