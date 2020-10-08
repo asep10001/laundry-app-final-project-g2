@@ -23,7 +23,7 @@ import {connect} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
 import {setLogin, setDataUser, setDataCabang, setDataOrders} from '../actions';
-import {Home, Register, Login, Orders, ServiceOptions} from '../screen';
+import {Home, Register, Login, Orders, ServiceOptions, OtherOptions} from '../screen';
 import {SQLiteContext} from '../config';
 import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
 
@@ -217,8 +217,8 @@ export class NavBarOld extends Component {
           <Drawer.Screen name="Orders" >
             {(props) => <Orders {...props} />}
           </Drawer.Screen>
-          <Drawer.Screen name="Orders" >
-            {(props) => <Orders {...props} />}
+          <Drawer.Screen name="Other Options" >
+            {(props) => <OtherOptions {...props} />}
           </Drawer.Screen>
         </Drawer.Navigator>
       </>
