@@ -41,14 +41,11 @@ class Orders extends Component {
         cost: undefined,
       },
       costNow: this.props.orderCost,
+      hargaCabang: 0,
     };
   }
 
-  componentDidMount() {
-    // alert(
-    //   JSON.stringify(this.props.dataOrder)
-    // )
-  }
+  componentDidMount() {}
 
   onItemWeighChange = async (value) => {
     const {item_weigh, duration, cost} = this.state.selected;
@@ -66,9 +63,11 @@ class Orders extends Component {
 
   onDurationChange = (value) => {
     const {item_weigh, duration, cost} = this.state.selected;
-    let costNow = this.props.orderCost;
+    // alert(this.constNow);
     let hitung = (parseInt(item_weigh) * parseInt(value)).toString();
-    let hitungBerat = (parseInt(item_weigh) * parseInt(costNow)).toString();
+    let hitungBerat = (
+      parseInt(item_weigh) * parseInt(this.state.hargaCabang)
+    ).toString();
 
     this.setState({
       selected: {
@@ -76,7 +75,7 @@ class Orders extends Component {
         duration: value,
         cost: (parseInt(hitung) + parseInt(hitungBerat)).toString(),
       },
-      costNow: (parseInt(value) + parseInt(costNow)).toString(),
+      costNow: (parseInt(value) + parseInt(this.state.hargaCabang)).toString(),
     });
   };
 
@@ -156,9 +155,13 @@ class Orders extends Component {
               service: 'setrika',
               servicesCost: 10000,
             });
-            this.props.setOrdersServices(this.state.service);
-            this.props.setServicesCost(this.state.servicesCost);
-            alert(this.state.service);
+            await this.props.setOrdersServices(this.state.service);
+            await this.props.setServicesCost(this.state.servicesCost);
+            await this.setState({
+              hargaCabang: this.props.servicesCost,
+            });
+
+            // alert(this.state.hargaCabang);
           }}>
           <Card>
             <CardItem cardBody>
@@ -187,7 +190,19 @@ class Orders extends Component {
           </Card>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => alert('hi')}>
+        <TouchableOpacity
+          onPress={async () => {
+            await this.setState({
+              isServicesChosen: true,
+              service: 'cuci',
+              servicesCost: 12000,
+            });
+            await this.props.setOrdersServices(this.state.service);
+            await this.props.setServicesCost(this.state.servicesCost);
+            await this.setState({
+              hargaCabang: this.props.servicesCost,
+            });
+          }}>
           <Card>
             <CardItem cardBody>
               <Image
@@ -212,7 +227,19 @@ class Orders extends Component {
           </Card>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => alert('hi')}>
+        <TouchableOpacity
+          onPress={async () => {
+            await this.setState({
+              isServicesChosen: true,
+              service: 'cuci dan setrika',
+              servicesCost: 18000,
+            });
+            await this.props.setOrdersServices(this.state.service);
+            await this.props.setServicesCost(this.state.servicesCost);
+            await this.setState({
+              hargaCabang: this.props.servicesCost,
+            });
+          }}>
           <Card>
             <CardItem cardBody>
               <Image
@@ -274,12 +301,12 @@ class Orders extends Component {
     return cards;
   };
 
-  screenShown = () => {
+  screenShown = (costNow) => {
     if (
       this.state.isBranchChosen === true &&
       this.state.isServicesChosen === false
     ) {
-      return this.serviceOption();
+      return this.serviceOption(costNow);
     } else if (
       this.state.isBranchChosen === true &&
       this.state.isServicesChosen === true
@@ -326,7 +353,7 @@ class Orders extends Component {
               </Col>
             </Grid>
           </Content>
-          {this.screenShown()}
+          {this.screenShown(this.costNow)}
           {/* {this.state.isBranchChosen
             ? this.serviceOption()
             : this.branchOptions()}
