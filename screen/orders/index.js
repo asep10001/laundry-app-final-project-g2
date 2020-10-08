@@ -67,15 +67,14 @@ class Orders extends Component {
   onDurationChange = (value) => {
     const {item_weigh, duration, cost} = this.state.selected;
     let costNow = this.props.orderCost;
-    let hitung = 
-      (parseInt(item_weigh) * parseInt(value)).toString();
+    let hitung = (parseInt(item_weigh) * parseInt(value)).toString();
     let hitungBerat = (parseInt(item_weigh) * parseInt(costNow)).toString();
 
     this.setState({
       selected: {
         item_weigh,
         duration: value,
-        cost : (parseInt(hitung) + parseInt(hitungBerat)).toString(),
+        cost: (parseInt(hitung) + parseInt(hitungBerat)).toString(),
       },
       costNow: (parseInt(value) + parseInt(costNow)).toString(),
     });
@@ -133,6 +132,12 @@ class Orders extends Component {
                 {this.props.orderItemWeigh}
                 {this.props.orderDuration}
                 {this.props.servicesCost}
+                berat sekarang
+                {this.state.selected.item_weigh}
+                durasi sekarang
+                {this.state.selected.duration}
+                harga sekarang
+                {this.state.selected.cost}
               </Text>
             </View>
           </Content>
@@ -329,18 +334,33 @@ class Orders extends Component {
             ? this.otherServicesOptions()
             : this.serviceOption()} */}
         </Content>
+
         {this.state.isBranchChosen ? (
-          <>
-            <Button
-              style={{
-                width: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={() => this.setState({isBranchChosen: false})}>
-              <Text>KEMBALI MEMILIH CABANG</Text>
-            </Button>
-          </>
+          this.state.isServicesChosen ? (
+            <>
+              <Button
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => this.setState({isServicesChosen: false})}>
+                <Text>KEMBALI MEMILIH SERVICE</Text>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={() => this.setState({isBranchChosen: false})}>
+                <Text>KEMBALI MEMILIH CABANG</Text>
+              </Button>
+            </>
+          )
         ) : null}
       </Container>
     );
