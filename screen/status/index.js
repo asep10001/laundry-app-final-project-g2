@@ -11,9 +11,12 @@ import {
   Left,
   Right,
   Button,
+  Input,
 } from 'native-base';
 import {connect} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
+import {Alert} from 'react-native';
+import {setDataOrders} from '../../actions';
 
 class StatusOrderOld extends Component {
   constructor(props) {
@@ -24,25 +27,56 @@ class StatusOrderOld extends Component {
       data: [],
       isPaid: false,
       index: 0,
+      update: false,
     };
   }
 
+  async componentDidMount() {}
+
+  getFirebaseData = async (data) => {
+    let size = 0;
+    await firestore()
+      .collection('transactions')
+      .doc(`${data[0].email}`)
+      .collection('orders')
+      .get()
+      .then((snap) => (size = snap.size));
+    // .then(() => console.log(size));
+    console.log(size);
+
+    let order = [];
+    for (let i = 0; i < size; i++) {
+      await firestore()
+        .collection('transactions')
+        .doc(`${data[0].email}`)
+        .collection('orders')
+        .doc(`order${i}`)
+        .get()
+        .then((snap) => {
+          order.push(
+            JSON.parse(snap.data().order));
+        });
+    }
+    // console.log(order);
+    this.props.setDataOrders(order);
+
+    // alert('hi')
+  };
   addOrderFirebase = (data) => {
-    var order = '';
     for (let i = 0; i < data.length; i++) {
-      order = 'order' + i;
       firestore()
         .collection('transactions')
         .doc(`${data[i].email}`)
         .collection('orders')
-        .doc(`order${data[i].id}`)
+        .doc(`order${i}`)
         .set({
           order: `{
+            "id" : "${i}",
           "branch": "${data[i].branch}",
           "cost": "${data[i].cost}",
          "duration": "${data[i].duration}",
           "item_weigh": "${data[i].item_weigh}",
-          "service": "${data[i].services}",
+          "services": "${data[i].services}",
           "status": "pending"}`,
         })
         .then(() => {
@@ -126,6 +160,12 @@ class StatusOrderOld extends Component {
               </Right>
             </ListItem>
           </List>
+          <Button
+            onPress={async () => {
+              this.deleteOrder(i);
+            }}>
+            <Text>RUBAH</Text>
+          </Button>
         </Content>,
       );
     }
@@ -141,18 +181,86 @@ class StatusOrderOld extends Component {
       );
     } else {
       return (
-        <Button onPress={() => this.addOrderFirebase(this.props.dataOrder)}>
-          <Text>BAYAR</Text>
-        </Button>
+        <>
+          <Button onPress={() => this.addOrderFirebase(this.props.dataOrder)}>
+            <Text>BAYAR</Text>
+          </Button>
+          <Button onPress={() => this.getFirebaseData(this.props.dataUser)}>
+            <Text>Ambil</Text>
+          </Button>
+        </>
       );
     }
+  };
+
+  deleteOrderFromFirebase = async (index) => {
+    firestore()
+      .collection('transactions')
+      .doc(`${this.props.dataUser[0].email}`)
+      .collection('orders')
+      .doc(`order${index}`)
+      .delete()
+      .then(() => {
+        console.log('User deleted!');
+      });
+  };
+
+  deleteOrderFromSQLite = async (index) => {
+    const order_id = this.props.dataOrder[index].id;
+    console.log(order_id);
+
+    await this.props.sqlite.runQuery(
+      `delete from orders where id="${order_id}"`,
+      [],
+    );
+    const filterData = [];
+    await this.props.sqlite
+      .runQuery(
+        `select * from orders where email='${this.props.dataUser[0].email}'`,
+        [],
+      )
+      .then(([results]) => {
+        for (let i = 0; i < 100; i++) {
+          if (results.rows.item(i) !== undefined) {
+            filterData.push(results.rows.item(i));
+          }
+        }
+        // alert(JSON.stringify(data))
+      });
+
+    alert(JSON.stringify(filterData));
+    await this.props.setDataOrders(filterData);
+  };
+  updateOrder = (index) => {
+    // const data = this.props.dataOrder;
+    // data.splice(index, 1)
+    // this.props.setDataOrders(data)
+    this.deleteOrderFromFirebase(index);
+    this.deleteOrderFromSQLite(index);
+  };
+
+  deleteOrder = (index) => {
+    const data = this.props.dataOrder;
+    const indexIni = index;
+    Alert.alert(
+      'BATAL ORDER',
+      'Apakah anda yakin ingin mengulang atau membatalkan order ini?',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel was pressed!'),
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => this.updateOrder(indexIni)},
+      ],
+    );
   };
   render() {
     return (
       <Container>
         <Content>
-          {this.screenShow()}
-          {this.isPaid()}
+          {this.state.update ? null : this.screenShow()}
+          {this.state.update ? null : this.isPaid()}
         </Content>
       </Container>
     );
