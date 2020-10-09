@@ -17,9 +17,12 @@ import {
   Label,
   Button,
   Text,
+  View,
 } from 'native-base';
 import {SQLiteContext} from '../../config';
 import firestore from '@react-native-firebase/firestore';
+import {Image} from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 class LoginOld extends Component {
   constructor(props) {
@@ -126,7 +129,7 @@ class LoginOld extends Component {
   };
 
   orderUserSQLite = async () => {
-     console.log(this.state.user.email)
+    console.log(this.state.user.email);
     const filterData = [];
     await this.props.sqlite
       .runQuery(
@@ -185,23 +188,46 @@ class LoginOld extends Component {
   };
   render() {
     return (
-      <Container>
-        <Content>
-          <Form>
-            <Item floatingLabel>
-              <Label>Email</Label>
-              <Input
-                value={this.state.user.email}
-                onChangeText={(text) => this.handleTextEmail(text)}></Input>
-            </Item>
-            <Item floatingLabel>
-              <Label>Password</Label>
-              <Input
-                value={this.state.user.password}
-                onChangeText={(text) => this.handleTextPassword(text)}></Input>
-            </Item>
-            <Item>
+      <>
+        <View
+          style={{
+            backgroundColor: '#03b876',
+            height: 200,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Image
+            style={{width: 150, height: 150}}
+            source={require('../../assets/images/logo.png')}
+          />
+        </View>
+        <Container>
+          <Content style={{marginTop: 50, marginHorizontal: 20}}>
+            <Form>
+              <Item floatingLabel>
+                <Label>Email</Label>
+                <Input
+                  value={this.state.user.email}
+                  onChangeText={(text) => this.handleTextEmail(text)}></Input>
+              </Item>
+              <Item floatingLabel>
+                <Label>Password</Label>
+                <Input
+                  value={this.state.user.password}
+                  onChangeText={(text) =>
+                    this.handleTextPassword(text)
+                  }></Input>
+              </Item>
+            </Form>
+            <View style={{width: 200, marginTop: 30}}>
               <Button
+                style={{
+                  width: 320,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 30,
+                  backgroundColor: '#03b876',
+                }}
                 title="LOGIN"
                 onPress={() => {
                   this.signIn({
@@ -212,10 +238,19 @@ class LoginOld extends Component {
                 }}>
                 <Text>Log In</Text>
               </Button>
-            </Item>
-          </Form>
-        </Content>
-      </Container>
+            </View>
+            <View style={{justifyContent:'center', alignItems:'center', marginVertical: 30}}>
+              <Text>Forgot Password?</Text>
+            </View>
+
+            <View style={{justifyContent:'center', alignItems:'center', marginVertical: 60}}>
+              <TouchableOpacity onPress={()=>this.props.navigation.navigate('Register')}>
+                <Text>New Here? Sign Up!</Text>
+              </TouchableOpacity>
+            </View>
+          </Content>
+        </Container>
+      </>
     );
   }
 }
@@ -223,7 +258,7 @@ class LoginOld extends Component {
 const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
-  dataOrder: state.orders.orders
+  dataOrder: state.orders.orders,
 });
 
 const mapDispatchToProps = (dispatch) => ({
