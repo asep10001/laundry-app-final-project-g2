@@ -34,15 +34,18 @@ import {
   SplashScreen01,
   SplashScreen02,
   SplashScreen03,
+  SplashScreen04,
 } from '../screen';
 import {SQLiteContext} from '../config';
 import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
+
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
 
 CustomDrawerContent = (props) => {
   return (
@@ -203,9 +206,12 @@ export class NavBarOld extends Component {
     this.fecthingUserSQL();
     this.fecthingCabangSQL();
     // this.fecthingOrdersSQL();
-    {this.state.isLoggedIn === false ? this.spalshScreen() : this.userLoggedin()}
+    {
+      this.state.isLoggedIn === false
+        ? this.spalshScreen()
+        : this.userLoggedin();
+    }
   }
-
 
   userLoggedin = () => {
     return (
@@ -277,12 +283,17 @@ export class NavBarOld extends Component {
 
   spalshScreen = () => {
     return (
-      <Stack.Navigator headerMode="false">
+      <Stack.Navigator
+        navigationOption={{
+          swipeEnabled: true,
+        }}
+        headerMode="false">
         <Stack.Screen name="01" component={SplashScreen01} />
         <Stack.Screen name="02" component={SplashScreen02} />
-        <Stack.Screen name="03">
+        <Stack.Screen name="03" component={SplashScreen03} />
+        <Stack.Screen name="04">
           {(props) => (
-            <SplashScreen03 {...props} setIsReady={this.setIsReady} />
+            <SplashScreen04 {...props} setIsReady={this.setIsReady} />
           )}
         </Stack.Screen>
       </Stack.Navigator>

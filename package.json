@@ -36,6 +36,9 @@
     "react-native-svg": "^12.1.0",
     "react-native-touchable-scale": "^2.1.1",
     "react-native-vector-icons": "^7.1.0",
+    "react-navigation": "^4.4.2",
+    "react-navigation-fluid-transitions": "^0.3.2",
+    "react-navigation-stack": "^2.8.4",
     "react-redux": "^7.2.1",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0"

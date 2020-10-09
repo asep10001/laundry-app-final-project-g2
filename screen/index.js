@@ -1,6 +1,6 @@
 import Register from './register';
 import StatusOrder from './status';
-import {SplashScreen01, SplashScreen02, SplashScreen03} from './splashScreen';
+import {SplashScreen01, SplashScreen02, SplashScreen03, SplashScreen04} from './splashScreen';
 
 const {default: Home} = require('./home');
 const {default: Login} = require('./login');
@@ -15,4 +15,5 @@ export {
   SplashScreen01,
   SplashScreen02,
   SplashScreen03,
+  SplashScreen04
 };

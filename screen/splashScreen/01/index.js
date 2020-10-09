@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import {View, Text, Button, Image} from 'native-base';
-import {ImageBackground} from 'react-native';
+import {View, Text, Button} from 'native-base';
+import {ImageBackground , Image} from 'react-native';
 
 export class SplashScreen01 extends Component {
   render() {
@@ -23,13 +23,33 @@ export class SplashScreen01 extends Component {
               alignItems: 'center',
               backgroundColor: 'rgba(87,206,159,0.5)',
             }}>
-                <View></View>
-            <View style={{alignItems: 'center', justifyContent:'center', backgroundColor:'pink'}}>
-              <Text style={{color: '#fbfffe', fontSize: 25}}>Meet Our Pick Up Pilot</Text>
+            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+              <Image
+                source={require('../../../assets/images/pickUp/pick-up.png')}
+                style={{width: 270, height: 100}}></Image>
             </View>
-            <View  style={{alignItems: 'center', justifyContent:'center', backgroundColor:'pink'}}>
-              <Text style={{color: '#fbfffe', fontSize: 16}}>We Collect Your Dirty Clothes</Text>
-              <Text style={{color: '#fbfffe', fontSize: 16}}>From Your Doorsteps</Text>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+
+              }}>
+              <Text style={{color: '#fbfffe', fontSize: 25}}>
+                Meet Our Pick Up Pilot
+              </Text>
+            </View>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+
+              }}>
+              <Text style={{color: '#fbfffe', fontSize: 16}}>
+                We Collect Your Dirty Clothes
+              </Text>
+              <Text style={{color: '#fbfffe', fontSize: 16}}>
+                From Your Doorsteps
+              </Text>
             </View>
           </View>
         </ImageBackground>
