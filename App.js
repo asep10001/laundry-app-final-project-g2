@@ -9,9 +9,11 @@ import {
 import {PersistGate} from 'redux-persist/integration/react';
 import AsyncStorage from '@react-native-community/async-storage';
 import NavBar from './navbar';
+import Splash from './screen/splash';
 import allReducers from './reducers';
 import { SQLite3 } from './config/index';
 import { SQLiteContext } from './config/index';
+import { createSwitchNavigator, createAppContainer } from 'react-navigation';
 
 const persistConfig = {
   key: 'root',
@@ -23,7 +25,14 @@ const persistedReducer = persistCombineReducers(persistConfig, allReducers);
 let store = createStore(persistedReducer);
 let persistor = persistStore(store);
 
-export class App extends Component {
+const InitialNavigator = createSwitchNavigator({
+  Splash: Splash,
+  App: NavBar
+});
+
+const AppContainer = createAppContainer(InitialNavigator)
+
+class App extends Component {
   constructor(props) {
     super(props)
   
@@ -35,12 +44,12 @@ export class App extends Component {
   render() {
     return(
     <Provider store={store}>
-    <PersistGate loading={null} persistor={persistor}>
-      <SQLiteContext.Provider value={new SQLite3()}>
-        <NavBar />
-      </SQLiteContext.Provider>
-    </PersistGate>
-  </Provider>
+      <PersistGate loading={null} persistor={persistor}>
+        <SQLiteContext.Provider value={new SQLite3()}>
+        <AppContainer />
+        </SQLiteContext.Provider>
+      </PersistGate>
+    </Provider>
     )
   }
 }
