@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
-import {View, Text} from 'react-native';
+import {Image} from 'react-native';
 import {firebase, SQLiteContext} from '../../config';
 import {
+  View,
+  Text,
   Container,
   Header,
   Content,
@@ -13,9 +15,9 @@ import {
 } from 'native-base';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import { connect } from 'react-redux';
-import { setDataOrders, setDataCabang, setDataUser } from '../../actions';
-import { setLogin } from '../../actions/setLogin';
+import {connect} from 'react-redux';
+import {setDataOrders, setDataCabang, setDataUser} from '../../actions';
+import {setLogin} from '../../actions/setLogin';
 
 class RegisterOld extends Component {
   constructor(props) {
@@ -34,16 +36,20 @@ class RegisterOld extends Component {
 
   userNowSQLite = async (dataNow) => {
     const data = [];
-    await this.props.sqlite.runQuery(`update user set username=${dataNow.username}, alamat=${dataNow.alamat}, photo=${dataNow.photo}, email=${dataNow.email}`,  [])
-    .then(this.props.sqlite.runQuery(`select * from user`,  []))
-    .then(([results]) => {
-      for (let i = 0; i < 100; i++) {
-        if (results.rows.item(i) !== undefined) {
-          data.push(results.rows.item(i));
+    await this.props.sqlite
+      .runQuery(
+        `update user set username=${dataNow.username}, alamat=${dataNow.alamat}, photo=${dataNow.photo}, email=${dataNow.email}`,
+        [],
+      )
+      .then(this.props.sqlite.runQuery(`select * from user`, []))
+      .then(([results]) => {
+        for (let i = 0; i < 100; i++) {
+          if (results.rows.item(i) !== undefined) {
+            data.push(results.rows.item(i));
+          }
         }
-      }
-      this.props.setDataUSer(data);
-    });
+        this.props.setDataUSer(data);
+      });
   };
   addDataFirebase = (data) => {
     firestore()
@@ -153,46 +159,73 @@ class RegisterOld extends Component {
 
   render() {
     return (
-      <Container>
-        <Content>
-          <Form>
-            <Item floatingLabel>
-              <Label>Email</Label>
-              <Input
-                value={this.state.user.email}
-                onChangeText={(text) => this.handleTextEmail(text)}></Input>
-            </Item>
-            <Item floatingLabel>
-              <Label>Password</Label>
-              <Input
-                valuet={this.state.user.password}
-                onChangeText={(text) => this.handleTextPassword(text)}></Input>
-            </Item>
-            <Item floatingLabel>
-              <Label>Alamat</Label>
-              <Input
-                valuet={this.state.user.alamat}
-                onChangeText={(text) => this.handleTextAlamat(text)}></Input>
-            </Item>
-            <Item floatingLabel>
-              <Label>Username</Label>
-              <Input
-                valuet={this.state.user.username}
-                onChangeText={(text) => this.handleTextUsername(text)}></Input>
-            </Item>
-            <Item floatingLabel>
-              <Label>Photo URL</Label>
-              <Input
-                valuet={this.state.user.photo}
-                onChangeText={(text) => this.handleTextPhoto(text)}></Input>
-            </Item>
-            <Text>HI {this.state.user.username}</Text>
-            <Button onPress={() => this.createUser(this.state.user)}>
-              <Text>REGISTER</Text>
-            </Button>
-          </Form>
-        </Content>
-      </Container>
+      <>
+        <View
+          style={{
+            backgroundColor: '#03b876',
+            height: 200,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Image
+            style={{width: 150, height: 150}}
+            source={require('../../assets/images/logo.png')}
+          />
+        </View>
+        <Container>
+          <Content style={{marginTop: 50, marginHorizontal: 20}}>
+            <Form>
+              <Item floatingLabel>
+                <Label>Email</Label>
+                <Input
+                  value={this.state.user.email}
+                  onChangeText={(text) => this.handleTextEmail(text)}></Input>
+              </Item>
+              <Item floatingLabel>
+                <Label>Password</Label>
+                <Input
+                  valuet={this.state.user.password}
+                  onChangeText={(text) =>
+                    this.handleTextPassword(text)
+                  }></Input>
+              </Item>
+              <Item floatingLabel>
+                <Label>Alamat</Label>
+                <Input
+                  valuet={this.state.user.alamat}
+                  onChangeText={(text) => this.handleTextAlamat(text)}></Input>
+              </Item>
+              <Item floatingLabel>
+                <Label>Username</Label>
+                <Input
+                  valuet={this.state.user.username}
+                  onChangeText={(text) =>
+                    this.handleTextUsername(text)
+                  }></Input>
+              </Item>
+              <Item floatingLabel>
+                <Label>Photo URL</Label>
+                <Input
+                  valuet={this.state.user.photo}
+                  onChangeText={(text) => this.handleTextPhoto(text)}></Input>
+              </Item>
+            </Form>
+            <View style={{width: 200, marginTop: 30}}>
+              <Button
+                style={{
+                  width: 320,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 30,
+                  backgroundColor: '#03b876',
+                }}
+                onPress={() => this.createUser(this.state.user)}>
+                <Text>REGISTER</Text>
+              </Button>
+            </View>
+          </Content>
+        </Container>
+      </>
     );
   }
 }

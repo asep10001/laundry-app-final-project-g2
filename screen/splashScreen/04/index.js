@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import {View, Text, Button} from 'native-base';
 import {ImageBackground , Image} from 'react-native';
+import { connect } from 'react-redux';
+import { setDataOrders, setDataCabang, setDataUser, setReady } from '../../../actions';
+import { setLogin } from '../../../actions/setLogin';
 
 export class SplashScreen04 extends Component {
   render() {
@@ -89,4 +92,19 @@ export class SplashScreen04 extends Component {
   }
 }
 
-export default SplashScreen04;
+const mapStateToProps = (state) => ({
+  statusLogin: state.auth.isLoggedin,
+  dataUser: state.userData.dataUser,
+  ready: state.ready.isReady
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setStatusLogin: () => dispatch(setLogin()),
+  setDataUSer: (payload) => dispatch(setDataUser(payload)),
+  setDataCabang: (payload) => dispatch(setDataCabang(payload)),
+  setDataOrders: (payload) => dispatch(setDataOrders(payload)),
+  setIsReady: () => dispatch(setReady())
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(SplashScreen04);

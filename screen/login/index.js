@@ -102,7 +102,7 @@ class LoginOld extends Component {
           data.push(results.rows.item(i));
         }
       }
-      alert(JSON.stringify(data));
+      // alert(JSON.stringify(data));
       this.props.setDataCabang(data);
     });
   };
@@ -172,7 +172,8 @@ class LoginOld extends Component {
       })
       .then(() => {
         this.props.setStatusLogin();
-        console.log('User signed in!');
+      //  this.props.setStatusLogin();
+        alert('User signed in!');
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {

@@ -22,7 +22,13 @@ import {Card} from 'react-native-elements';
 import {connect} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
-import {setLogin, setDataUser, setDataCabang, setDataOrders} from '../actions';
+import {
+  setLogin,
+  setDataUser,
+  setDataCabang,
+  setDataOrders,
+  setReady,
+} from '../actions';
 import {
   Home,
   Register,
@@ -35,17 +41,16 @@ import {
   SplashScreen02,
   SplashScreen03,
   SplashScreen04,
+  WelcomeUser,
 } from '../screen';
 import {SQLiteContext} from '../config';
 import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
-
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
 const HomeStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
 
 CustomDrawerContent = (props) => {
   return (
@@ -104,7 +109,11 @@ CustomDrawerContent = (props) => {
         </Content>
       </Container>
       <DrawerItemList {...props} />
-      <Button title="LOG OUT" onPress={() => props.setUserLogin()}></Button>
+      <Button
+        title="LOG OUT"
+        onPress={() => {
+          props.setUserLogin();
+        }}></Button>
     </DrawerContentScrollView>
   );
 };
@@ -206,11 +215,6 @@ export class NavBarOld extends Component {
     this.fecthingUserSQL();
     this.fecthingCabangSQL();
     // this.fecthingOrdersSQL();
-    {
-      this.state.isLoggedIn === false
-        ? this.spalshScreen()
-        : this.userLoggedin();
-    }
   }
 
   userLoggedin = () => {
@@ -240,7 +244,7 @@ export class NavBarOld extends Component {
           hideStatusBar="true"
           drawerType="back">
           <Drawer.Screen name="Home">
-            {(props) => <Home {...props} />}
+            {(props) => <WelcomeUser {...props} />}
           </Drawer.Screen>
           <Drawer.Screen name="Orders">
             {(props) => (
@@ -271,13 +275,13 @@ export class NavBarOld extends Component {
 
   userLoggedout = () => {
     return (
-      <Drawer.Navigator>
-        <Drawer.Screen name="Home">
+      <Stack.Navigator headerMode="false">
+        <Stack.Screen name="Home">
           {(props) => <Home {...props} />}
-        </Drawer.Screen>
-        <Drawer.Screen name="Register" component={Register} />
-        <Drawer.Screen name="Log In" component={Login} />
-      </Drawer.Navigator>
+        </Stack.Screen>
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Log In" component={Login} />
+      </Stack.Navigator>
     );
   };
 
@@ -375,14 +379,30 @@ export class NavBarOld extends Component {
     });
   };
 
+  showScreen = () => {
+    if (this.props.isReady === false && this.props.statusLogin === false) {
+      return (
+        alert(this.props.isReady === false && this.props.statusLogin === false),
+        this.spalshScreen()
+      );
+    } else if (
+      this.props.isReady === true &&
+      this.props.statusLogin === false
+    ) {
+      return this.userLoggedout();
+    } else {
+      return this.userLoggedin();
+    }
+  };
   render() {
     return (
       <NavigationContainer>
-        {this.state.isReady === false
+        {/* {this.props.isReady === false
           ? this.spalshScreen()
-          : this.state.isLoggedIn === true
+          : this.state.isLoggedIn === false
           ? this.userLoggedout()
-          : this.userLoggedin()}
+          : this.userLoggedin()} */}
+        {this.showScreen()}
       </NavigationContainer>
     );
   }
@@ -391,6 +411,7 @@ export class NavBarOld extends Component {
 const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
+  isReady: state.ready.isReady,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -398,6 +419,7 @@ const mapDispatchToProps = (dispatch) => ({
   setDataUSer: (payload) => dispatch(setDataUser(payload)),
   setDataCabang: (payload) => dispatch(setDataCabang(payload)),
   setDataOrders: (payload) => dispatch(setDataOrders(payload)),
+  setIsReady: () => dispatch(setReady()),
 });
 
 class NavBar extends Component {

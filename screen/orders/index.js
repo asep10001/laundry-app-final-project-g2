@@ -74,10 +74,37 @@ class OrdersOld extends Component {
     //   );
     //   alert(JSON.stringify(data));
     // } else {
+    alert(data.length);
+
+    let id = 0;
+    let hasil = [];
+    await this.props.sqlite
+      .runQuery(`select id from orders`)
+      .then(([results]) => {
+        console.log('ini results ' + typeof results.rows.item(0).id);
+        for (let i = 0; i < 100; i++) {
+          if (results.rows.item(i) !== undefined) {
+            // if (results.)
+            hasil.push(results.rows.item(i).id);
+          } else {
+            break;
+          }
+        }
+        // alert(JSON.stringify(data))
+      })
+      .then(() => {
+        for ( let i = 0; i < 100; i++) {
+          if (hasil[i] !== i) {
+            id = i
+            break;
+          }
+        }
+      });
+
     await this.props.sqlite.runQuery(
       `insert into orders values (?, ?, ?, ?, ?, ?, ?)`,
       [
-        (data.length + 1).toString(),
+        id.toString(),
         this.props.dataUser[0].email.toString(),
         this.props.orderBranch.toString(),
         this.state.selected.item_weigh.toString(),
@@ -89,9 +116,13 @@ class OrdersOld extends Component {
         ).toString(),
       ],
     );
-    const filterData = []
+
+    const filterData = [];
     await this.props.sqlite
-      .runQuery(`select * from orders where email='${this.props.dataUser[0].email}'`, [])
+      .runQuery(
+        `select * from orders where email='${this.props.dataUser[0].email}'`,
+        [],
+      )
       .then(([results]) => {
         for (let i = 0; i < 100; i++) {
           if (results.rows.item(i) !== undefined) {
@@ -102,7 +133,7 @@ class OrdersOld extends Component {
       });
 
     alert(JSON.stringify(filterData));
-    this.props.setDataOrders(filterData)
+    this.props.setDataOrders(filterData);
     // }
   };
 
