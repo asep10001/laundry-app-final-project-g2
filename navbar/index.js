@@ -31,6 +31,9 @@ import {
   ServiceOptions,
   OtherOptions,
   StatusOrder,
+  SplashScreen01,
+  SplashScreen02,
+  SplashScreen03,
 } from '../screen';
 import {SQLiteContext} from '../config';
 import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
@@ -110,6 +113,7 @@ export class NavBarOld extends Component {
     this.fecthingCabangSQL();
     this.fecthingOrdersSQL();
     this.state = {
+      isReady: false,
       isLoggedIn: this.props.statusLogin,
       userData: [],
       servicesCost: 0,
@@ -199,7 +203,9 @@ export class NavBarOld extends Component {
     this.fecthingUserSQL();
     this.fecthingCabangSQL();
     // this.fecthingOrdersSQL();
+    {this.state.isLoggedIn === false ? this.spalshScreen() : this.userLoggedin()}
   }
+
 
   userLoggedin = () => {
     return (
@@ -250,9 +256,7 @@ export class NavBarOld extends Component {
             )}
           </Drawer.Screen>
           <Drawer.Screen name="Pesanan Saya">
-            {(porps)=>(
-              <StatusOrder/>
-            )}
+            {(porps) => <StatusOrder />}
           </Drawer.Screen>
         </Drawer.Navigator>
       </>
@@ -271,6 +275,24 @@ export class NavBarOld extends Component {
     );
   };
 
+  spalshScreen = () => {
+    return (
+      <Stack.Navigator headerMode="false">
+        <Stack.Screen name="01" component={SplashScreen01} />
+        <Stack.Screen name="02" component={SplashScreen02} />
+        <Stack.Screen name="03">
+          {(props) => (
+            <SplashScreen03 {...props} setIsReady={this.setIsReady} />
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    );
+  };
+  setIsReady = () => {
+    this.setState({
+      isReady: !this.state.isReady,
+    });
+  };
   setOrdersBranch = (data) => {
     const {cost, duration, item_weigh, services} = this.state.orders;
     this.setState({
@@ -286,8 +308,8 @@ export class NavBarOld extends Component {
 
   setServicesCost = (data) => {
     this.setState({
-      servicesCost: data
-    })
+      servicesCost: data,
+    });
   };
 
   setOrdersServices = (data) => {
@@ -309,7 +331,7 @@ export class NavBarOld extends Component {
       orders: {
         branch,
         cost,
-        duration : data,
+        duration: data,
         item_weigh,
         services,
       },
@@ -321,7 +343,7 @@ export class NavBarOld extends Component {
     this.setState({
       orders: {
         branch,
-        cost : data,
+        cost: data,
         duration,
         item_weigh,
         services,
@@ -336,17 +358,20 @@ export class NavBarOld extends Component {
         branch,
         cost,
         duration,
-        item_weigh : data,
+        item_weigh: data,
         services,
       },
     });
   };
 
-
   render() {
     return (
       <NavigationContainer>
-        {this.props.statusLogin ? this.userLoggedout() : this.userLoggedin()}
+        {this.state.isReady === false
+          ? this.spalshScreen()
+          : this.state.isLoggedIn === true
+          ? this.userLoggedout()
+          : this.userLoggedin()}
       </NavigationContainer>
     );
   }
