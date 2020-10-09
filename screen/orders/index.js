@@ -93,9 +93,9 @@ class OrdersOld extends Component {
         // alert(JSON.stringify(data))
       })
       .then(() => {
-        for ( let i = 0; i < 100; i++) {
+        for (let i = 0; i < 100; i++) {
           if (hasil[i] !== i) {
-            id = i
+            id = i;
             break;
           }
         }
@@ -312,7 +312,6 @@ class OrdersOld extends Component {
             <CardItem>
               <Body>
                 <Button transparent>
-                  <Icon active name="chatbubbles" />
                   <Text>4 Comments</Text>
                 </Button>
               </Body>
@@ -349,7 +348,6 @@ class OrdersOld extends Component {
             <CardItem>
               <Body>
                 <Button transparent>
-                  <Icon active name="chatbubbles" />
                   <Text>4 Comments</Text>
                 </Button>
               </Body>
@@ -383,8 +381,7 @@ class OrdersOld extends Component {
             <CardItem>
               <Body>
                 <Button transparent>
-                  <Icon active name="chatbubbles" />
-                  <Text>4 Comments</Text>
+                  <Text>Cuci dan Setrika</Text>
                 </Button>
               </Body>
               <Right>
@@ -402,6 +399,9 @@ class OrdersOld extends Component {
     this.props.dataCabang.map((item, index) => {
       cards.push(
         <TouchableOpacity
+          style={{
+            borderRadius: 20,
+          }}
           key={index}
           onPress={() => {
             this.setState({isBranchChosen: true});
@@ -419,11 +419,18 @@ class OrdersOld extends Component {
                   flex: 1,
                 }}></ImageBackground>
             </CardItem>
-            <CardItem>
+            <CardItem style={{backgroundColor: '#dadbe4'}}>
               <Body>
-                <Button transparent>
-                  <Icon active name="chatbubbles" />
-                  <Text>{item.branch}</Text>
+                <Button
+                  transparent
+                  style={{justifyContent: 'center', alignItems: 'center'}}>
+                  <Text
+                    style={{
+                      fontSize: 30,
+                      fontWeight: 'bold',
+                    }}>
+                    {item.branch}
+                  </Text>
                 </Button>
               </Body>
             </CardItem>
@@ -453,15 +460,18 @@ class OrdersOld extends Component {
   render() {
     return (
       <Container>
-        <Content>
-          <Content>
-            <Grid>
+        <Content
+          style={{
+            backgroundColor: 'rgba(123,217,185, 0.5)',
+          }}>
+          <Content style={{}}>
+            <Grid style={{}}>
               <Col
                 style={{
                   justifyContent: 'center',
                   alignItems: 'center',
-                  backgroundColor: '#635DB7',
-                  height: 100,
+                  backgroundColor: '#03b876',
+                  height: 200,
                   width: '30%',
                 }}>
                 <Thumbnail
@@ -473,15 +483,41 @@ class OrdersOld extends Component {
               </Col>
               <Col
                 style={{
-                  backgroundColor: '#00CE9F',
-                  height: 100,
+                  flex: 1,
+                  backgroundColor: '#03b876',
+                  height: 200,
                   width: '70%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}>
-                <Row>
-                  <Text>{this.props.dataUser[0].username}</Text>
+                <Row
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 25,
+                      color: '#dadbe4',
+                      fontWeight: 'bold',
+                    }}>
+                    {this.props.dataUser[0].username}
+                  </Text>
                 </Row>
-                <Row>
-                  <Text>{this.props.dataUser[0].alamat}</Text>
+                <Row
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      color: '#dadbe4',
+                    }}>
+                    {' '}
+                   {this.props.dataUser[0].alamat}
+                  </Text>
                 </Row>
               </Col>
             </Grid>
