@@ -179,8 +179,8 @@ class OrdersOld extends Component {
     };
     return (
       <>
-        <Container>
-          <Content>
+        <Container style={{marginHorizontal: 20}}>
+          <Content style={{backgroundColor: "rgba(123,217,185, 0.5)", paddingVertical: 20}}>
             <Form>
               <Label>Berat Item (Maks 10 Kg)</Label>
               <Picker
@@ -209,56 +209,62 @@ class OrdersOld extends Component {
               <List>
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text>CABANG</Text>
+                    <Text style={{fontSize:11}}>CABANG</Text>
                   </Left>
                   <Right>
-                    <Text>{this.props.orderBranch.toUpperCase()}</Text>
+                    <Text style={{fontSize:11}}>{this.props.orderBranch.toUpperCase()}</Text>
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text>SERVICE</Text>
+                    <Text style={{fontSize:11}}>SERVICE</Text>
                   </Left>
                   <Right>
-                    <Text>{this.props.orderServices.toUpperCase()}</Text>
+                    <Text style={{fontSize:11}}>{this.props.orderServices.toUpperCase()}</Text>
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text>BERAT BARANG</Text>
+                    <Text style={{fontSize:11}}>BERAT BARANG</Text>
                   </Left>
                   <Right>
-                    <Text>{this.state.selected.item_weigh}KG</Text>
+                    <Text style={{fontSize:11}}>{this.state.selected.item_weigh}KG</Text>
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text>DURASI PENGIRIMAN</Text>
+                    <Text style={{fontSize:11}}>DURASI PENGIRIMAN</Text>
                   </Left>
                   <Right>
                     {this.state.selected.duration === '1000' ? (
-                      <Text>REGULER</Text>
+                      <Text style={{fontSize:11}}>REGULER</Text>
                     ) : (
-                      <Text>KILAT</Text>
+                      <Text style={{fontSize:11}}>KILAT</Text>
                     )}
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text>TOTAL BAYAR</Text>
+                    <Text style={{fontSize:15, fontWeight: 'bold'}}>TOTAL BAYAR</Text>
                   </Left>
                   <Right>
-                    <Text>{this.state.selected.cost}</Text>
+                    <Text style={{fontSize:15, fontWeight: 'bold'}}>{this.state.selected.cost}</Text>
                   </Right>
                 </ListItem>
               </List>
             </Content>
-            <Content>
-              <Button onPress={() => this.addOrderToSQLite()}>
+            <Content style={{marginTop: '10%'}}>
+              <Button style={{ 
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 20,
+                backgroundColor: '#01b976'
+              }}onPress={() => this.addOrderToSQLite()}>
                 <Text>BAYAR</Text>
               </Button>
             </Content>
@@ -312,7 +318,7 @@ class OrdersOld extends Component {
             <CardItem>
               <Body>
                 <Button transparent>
-                  <Text>4 Comments</Text>
+                  <Text>Setrika</Text>
                 </Button>
               </Body>
               <Right>
@@ -348,11 +354,11 @@ class OrdersOld extends Component {
             <CardItem>
               <Body>
                 <Button transparent>
-                  <Text>4 Comments</Text>
+                  <Text>Cuci</Text>
                 </Button>
               </Body>
               <Right>
-                <Text>Rp. 1000</Text>
+                <Text>Rp. 12000</Text>
               </Right>
             </CardItem>
           </Card>
@@ -385,7 +391,7 @@ class OrdersOld extends Component {
                 </Button>
               </Body>
               <Right>
-                <Text>Rp. 1000</Text>
+                <Text>Rp. 18000</Text>
               </Right>
             </CardItem>
           </Card>
