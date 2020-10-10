@@ -12,10 +12,18 @@ import {
   Right,
   Button,
   Input,
+  View,
 } from 'native-base';
 import {connect} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
-import {Alert} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  Platform,
+  PixelRatio,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import {setDataOrders} from '../../actions';
 
 class StatusOrderOld extends Component {
@@ -31,81 +39,11 @@ class StatusOrderOld extends Component {
     };
   }
 
-  async componentDidMount() {}
-
-  getFirebaseData = async (data) => {
-    let size = 0;
-    await firestore()
-      .collection('transactions')
-      .doc(`${data[0].email}`)
-      .collection('orders')
-      .get()
-      .then((snap) => (size = snap.size));
-    // .then(() => console.log(size));
-    console.log(size);
-
-    let order = [];
-    for (let i = 0; i < size; i++) {
-      await firestore()
-        .collection('transactions')
-        .doc(`${data[0].email}`)
-        .collection('orders')
-        .doc(`order${i}`)
-        .get()
-        .then((snap) => {
-          order.push(
-            JSON.parse(snap.data().order));
-        });
-    }
-    // console.log(order);
-    this.props.setDataOrders(order);
-
-    // alert('hi')
+  setIsPaid = (data) => {
+    this.setState({
+      isPaid: data,
+    });
   };
-  addOrderFirebase = (data) => {
-    for (let i = 0; i < data.length; i++) {
-      firestore()
-        .collection('transactions')
-        .doc(`${data[i].email}`)
-        .collection('orders')
-        .doc(`order${i}`)
-        .set({
-          order: `{
-            "id" : "${i}",
-          "branch": "${data[i].branch}",
-          "cost": "${data[i].cost}",
-         "duration": "${data[i].duration}",
-          "item_weigh": "${data[i].item_weigh}",
-          "services": "${data[i].services}",
-          "status": "pending"}`,
-        })
-        .then(() => {
-          console.log('Order added!');
-        });
-    }
-  };
-
-  //   fetchingSQLite = async () => {
-  //     const data = [];
-  //     await this.props.sqlite
-  //       .runQuery(
-  //         `select * from orders where email='${this.props.dataUser[0].email}'`,
-  //         [],
-  //       )
-  //       .then(([results]) => {
-  //         for (let i = 0; i < 100; i++) {
-  //           if (results.rows.item(i) !== undefined) {
-  //             data.push(results.rows.item(i));
-  //           }
-  //         }
-  //       });
-  //     this.setState({
-  //       data,
-  //     });
-  //   };
-  componentDidMount() {
-    // this.fetchingSQLite();
-  }
 
   screenShow = () => {
     const data = this.props.dataOrder;
@@ -114,58 +52,112 @@ class StatusOrderOld extends Component {
       screen.push(
         <Content key={i}>
           <List>
-            <ListItem itemHeader first key={i}>
+            <ListItem style={{backgroundColor: '#35c693'}} key={i}>
               <Left>
-                <Text>order{data[i].id}</Text>
-              </Left>
-            </ListItem>
-            <ListItem>
-              <Left>
-                <Text>BRANCH: </Text>
+                <Text
+                  style={{
+                    fontSize: style.label.fontSize,
+                    fontWeight: 'bold',
+                    color: 'white',
+                  }}>
+                  Order ID
+                </Text>
               </Left>
               <Right>
-                <Text>{data[i].branch}</Text>
+                <Text
+                  style={{
+                    fontSize: style.label.fontSize,
+                    fontWeight: 'bold',
+                    color: 'white',
+                  }}>
+                  {'order' + data[i].id}
+                </Text>
               </Right>
             </ListItem>
-            <ListItem>
+            <ListItem style={{backgroundColor: 'pink'}}>
               <Left>
-                <Text>BERAT: </Text>
+                <Text style={{fontSize: style.order.fontSize}}>BRANCH: </Text>
               </Left>
               <Right>
-                <Text>{data[i].item_weigh}KG</Text>
+                <Text style={{fontSize: style.order.fontSize}}>
+                  {data[i].branch.toUpperCase()}
+                </Text>
               </Right>
             </ListItem>
-            <ListItem>
+            <ListItem style={{backgroundColor: 'pink'}}>
               <Left>
-                <Text>SERVICE: </Text>
+                <Text style={{fontSize: style.order.fontSize}}>BERAT: </Text>
               </Left>
               <Right>
-                <Text>{data[i].services}</Text>
+                <Text style={{fontSize: style.order.fontSize}}>
+                  {data[i].item_weigh}KG
+                </Text>
               </Right>
             </ListItem>
-            <ListItem>
+            <ListItem style={{backgroundColor: 'pink'}}>
               <Left>
-                <Text>LAYANAN: </Text>
+                <Text style={{fontSize: style.order.fontSize}}>SERVICE: </Text>
               </Left>
               <Right>
-                <Text>{data[i].duration}</Text>
+                <Text style={{fontSize: style.order.fontSize}}>
+                  {data[i].services.toUpperCase()}
+                </Text>
               </Right>
             </ListItem>
-            <ListItem last>
+            <ListItem style={{backgroundColor: 'pink'}}>
               <Left>
-                <Text>HARGA: </Text>
+                <Text style={{fontSize: style.order.fontSize}}>LAYANAN: </Text>
               </Left>
               <Right>
-                <Text>{data[i].cost}</Text>
+                <Text style={{fontSize: style.order.fontSize}}>
+                  {data[i].duration}
+                </Text>
+              </Right>
+            </ListItem>
+            <ListItem style={{backgroundColor: 'grey'}}>
+              <Left>
+                <Text
+                  style={{
+                    fontSize: style.label.fontSize,
+                    fontWeight: 'bold',
+                    color: 'black',
+                  }}>
+                  HARGA:
+                </Text>
+              </Left>
+              <Right>
+                <Text
+                  style={{
+                    fontSize: style.label.fontSize,
+                    fontWeight: 'bold',
+                    color: 'black',
+                  }}>
+                  {data[i].cost}
+                </Text>
               </Right>
             </ListItem>
           </List>
-          <Button
-            onPress={async () => {
-              this.deleteOrder(i);
+          <View
+            style={{
+              alignSelf: 'stretch',
+              marginVertical: style.label.fontSize,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            <Text>RUBAH</Text>
-          </Button>
+            <Button
+              style={{
+                alignSelf: 'stretch',
+                marginHorizontal: '10%',
+                justifyContent: 'center',
+                borderRadius: style.label.fontSize,
+                backgroundColor: '#03b874',
+              }}
+              onPress={async () => {
+                this.deleteOrder(i);
+              }}>
+              <Text style={{fontSize: style.label.fontSize}}>BATALKAN</Text>
+            </Button>
+          </View>
         </Content>,
       );
     }
@@ -173,7 +165,7 @@ class StatusOrderOld extends Component {
   };
 
   isPaid = () => {
-    if (this.state.isPaid) {
+    if (this.state.isPaid === true) {
       return (
         <ListItem>
           <Text>MENUNGGU KONFIRMASI LAUNDRY</Text>
@@ -182,11 +174,16 @@ class StatusOrderOld extends Component {
     } else {
       return (
         <>
-          <Button onPress={() => this.addOrderFirebase(this.props.dataOrder)}>
-            <Text>BAYAR</Text>
-          </Button>
-          <Button onPress={() => this.getFirebaseData(this.props.dataUser)}>
-            <Text>Ambil</Text>
+          <Button
+            style={{
+              alignSelf: 'stretch',
+              marginHorizontal: 20,
+              borderRadius: 20,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+            onPress={() => this.addOrderFirebase(this.props.dataOrder)}>
+            <Text style={{fontSize: style.label.fontSize}}>BAYAR</Text>
           </Button>
         </>
       );
@@ -207,7 +204,7 @@ class StatusOrderOld extends Component {
 
   deleteOrderFromSQLite = async (index) => {
     const order_id = this.props.dataOrder[index].id;
-    console.log(order_id);
+    // console.log(order_id);
 
     await this.props.sqlite.runQuery(
       `delete from orders where id="${order_id}"`,
@@ -258,8 +255,35 @@ class StatusOrderOld extends Component {
   render() {
     return (
       <Container>
-        <Content>
+        <View
+          style={{
+            backgroundColor: '#03b876',
+            height: 230,
+            marginHorizontal: -20,
+            marginBottom: 30
+          }}>
+            <View style={{justifyContent:'center', alignItems:'center', marginVertical: 20}}>
+              <Image source={require('../../assets/images/troley.png')} style={{width: 125, height: 108}}>
+
+              </Image>
+            </View>
+          <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <Text
+              style={{
+                fontSize: style.descTotalHarga.fontSize,
+                fontWeight: 'bold',
+              }}>
+              Total Harga yang Harus dibayarkan adalah:{' '}
+            </Text>
+            <Text
+              style={{fontSize: style.totalHarga.fontSize, fontWeight: 'bold'}}>
+              Rp. {this.props.totalHarga},-
+            </Text>
+          </View>
+        </View>
+        <Content style={{marginHorizontal: style.label.fontSize}}>
           {this.state.update ? null : this.screenShow()}
+
           {this.state.update ? null : this.isPaid()}
         </Content>
       </Container>
@@ -281,12 +305,98 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 class StatusOrder extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      totalHarga: 0,
+    };
+  }
+
+  getHarga = () => {
+    const data = this.props.dataOrder;
+    let totalHarga = 0;
+    for (let i = 0; i < data.length; i++) {
+      totalHarga += parseInt(data[i].cost);
+    }
+    this.setState({
+      totalHarga: totalHarga,
+    });
+  };
+
+  getFirebaseData = async (data) => {
+    let size = 0;
+    await firestore()
+      .collection('transactions')
+      .doc(`${data[0].email}`)
+      .collection('orders')
+      .get()
+      .then((snap) => (size = snap.size));
+    // .then(() => console.log(size));
+    // console.log(size);
+
+    let order = [];
+    for (let i = 0; i < size; i++) {
+      await firestore()
+        .collection('transactions')
+        .doc(`${data[0].email}`)
+        .collection('orders')
+        .doc(`order${i}`)
+        .get()
+        .then((snap) => {
+          order.push(JSON.parse(snap.data().order));
+        });
+    }
+    // console.log(order);
+    this.props.setDataOrders(order);
+
+    // alert('hi')
+  };
+  async componentDidMount() {
+    await this.getFirebaseData(this.props.dataUser);
+    this.getHarga();
+  }
+
   render() {
     return (
       <SQLiteContext.Consumer>
-        {(sqlite) => <StatusOrderOld {...this.props} sqlite={sqlite} />}
+        {(sqlite) => (
+          <StatusOrderOld
+            {...this.props}
+            sqlite={sqlite}
+            tes={this.state.tes}
+            totalHarga={this.state.totalHarga}
+          />
+        )}
       </SQLiteContext.Consumer>
     );
   }
 }
+
+let FONT_DETAIL_ORDER = 10;
+let FONT_LABEL = 18;
+let FONT_DESC_TOTAL_HARGA = 15;
+let FONT_TOTAL_HARGA = 30;
+
+if (PixelRatio.get() <= 2) {
+  FONT_DETAIL_ORDER = 8;
+  FONT_LABEL = 16;
+  FONT_DESC_TOTAL_HARGA = 13;
+  FONT_TOTAL_HARGA = 28;
+}
+
+const style = StyleSheet.create({
+  label: {
+    fontSize: FONT_LABEL,
+  },
+  order: {
+    fontSize: FONT_DETAIL_ORDER,
+  },
+  totalHarga: {
+    fontSize: FONT_TOTAL_HARGA,
+  },
+  descTotalHarga: {
+    fontSize: FONT_DESC_TOTAL_HARGA,
+  },
+});
 export default connect(mapStateToProps, mapDispatchToProps)(StatusOrder);

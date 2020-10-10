@@ -545,6 +545,7 @@ class OrdersOld extends Component {
                   width: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
+                  
                 }}
                 onPress={() => this.setState({isServicesChosen: false})}>
                 <Text>KEMBALI MEMILIH SERVICE</Text>

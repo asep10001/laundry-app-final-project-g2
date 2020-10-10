@@ -39,7 +39,7 @@ class Splash extends Component {
                     animation="bounceIn"
                     duration={1500}
                     iterationDelay={500}
-                    source={require('../../assets/images/logos.png')}
+                    source={require('../../assets/images/logo.png')}
                     resizeMode={'stretch'}
                     style={styles.logo}   
                 />
