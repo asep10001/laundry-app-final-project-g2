@@ -55,7 +55,7 @@ class StatusOrderOld extends Component {
     await data.forEach((item) => {
       firestore()
         .collection('transactions')
-        .doc(`${this.props.dataUser[0].email}`)
+        .doc(`${this.props.dataUser.email}`)
         .collection('orders')
         .doc(`order${item.id}`)
         .set({
@@ -286,7 +286,7 @@ class StatusOrderOld extends Component {
   deleteOrderFromFirebase = async (index) => {
     await firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       .doc(`order${index}`)
       .delete()
@@ -459,7 +459,7 @@ class StatusOrder extends Component {
     let size = 0;
     await firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       .get()
       .then((snap) => (size = snap.size));
@@ -469,7 +469,7 @@ class StatusOrder extends Component {
     let order = [];
     await firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       // .doc(`order${i}`)
       .get()

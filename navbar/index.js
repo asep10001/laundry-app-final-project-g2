@@ -121,9 +121,9 @@ CustomDrawerContent = (props) => {
 export class NavBarOld extends Component {
   constructor(props) {
     super(props);
-    this.fecthingUserSQL();
-    this.fecthingCabangSQL();
-    this.fecthingOrdersSQL();
+    // this.fecthingUserSQL();
+    // this.fecthingCabangSQL();
+    // this.fecthingOrdersSQL();
     this.state = {
       isReady: false,
       isLoggedIn: this.props.statusLogin,
@@ -198,7 +198,7 @@ export class NavBarOld extends Component {
     let data = [];
     this.props.sqlite
       .runQuery(
-        `select * from orders where email='${this.props.dataUser[0].email}'`,
+        `select * from orders where email='${this.props.dataUser.email}'`,
         [],
       )
       .then(([results]) => {
@@ -226,8 +226,8 @@ export class NavBarOld extends Component {
   };
 
   componentDidMount() {
-    this.fecthingUserSQL();
-    this.fecthingCabangSQL();
+    // this.fecthingUserSQL();
+    // this.fecthingCabangSQL();
   }
 
   userLoggedin = () => {
@@ -238,9 +238,9 @@ export class NavBarOld extends Component {
             <CustomDrawerContent
               {...props}
               data={{
-                photo: this.props.dataUser[0].photo,
-                name: this.props.dataUser[0].username,
-                alamat: this.props.dataUser[0].alamat,
+                photo: this.props.dataUser.photo,
+                name: this.props.dataUser.name,
+                alamat: this.props.dataUser.alamat,
 
                 // name: 'Asep Agus Heri Hermawan',
                 // alamat: 'jakarta selatan',

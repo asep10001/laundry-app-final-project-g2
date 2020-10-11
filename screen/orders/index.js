@@ -19,10 +19,11 @@ import {
   Title,
   Label,
   Form,
-  Picker,
   List,
   ListItem,
+  Picker
 } from 'native-base';
+
 import {TouchableOpacity} from 'react-native-gesture-handler';
 
 import {Col, Row, Grid} from 'react-native-easy-grid';
@@ -108,7 +109,7 @@ class OrdersOld extends Component {
   //     `insert into orders values (?, ?, ?, ?, ?, ?, ?, ?)`,
   //     [
   //       id.toString(),
-  //       this.props.dataUser[0].email.toString(),
+  //       this.props.dataUser.email.toString(),
   //       this.props.orderBranch.toString(),
   //       this.state.selected.item_weigh.toString(),
   //       this.state.selected.cost.toString(),
@@ -124,7 +125,7 @@ class OrdersOld extends Component {
   //   const filterData = [];
   //   await this.props.sqlite
   //     .runQuery(
-  //       `select * from orders where email='${this.props.dataUser[0].email}'`,
+  //       `select * from orders where email='${this.props.dataUser.email}'`,
   //       [],
   //     )
   //     .then(([results]) => {
@@ -145,7 +146,7 @@ class OrdersOld extends Component {
     let size = 0;
     await firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       .get()
       .then((snap) => (size = snap.size));
@@ -160,7 +161,7 @@ class OrdersOld extends Component {
     let order = [];
     await firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       // .doc(`order${i}`)
       .get()
@@ -178,7 +179,7 @@ class OrdersOld extends Component {
     let order = [];
     await firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       // .doc(`order${i}`)
       .get()
@@ -189,7 +190,7 @@ class OrdersOld extends Component {
         });
       });
 
-    for (let i = 0; i < order.length+1; i++) {
+    for (let i = 0; i < order.length + 1; i++) {
       if (parseInt(order[i]) === 0 && order.length === 1) {
         // console.log(parseInt(order[i]) === 0 && order.length === 1)
         await this.setState({
@@ -197,8 +198,11 @@ class OrdersOld extends Component {
         });
         break;
       } else {
-        if (order.length > 1 && (i !== parseInt(order[i]) || order[i] === undefined)) {
-        console.log('masuk else')
+        if (
+          order.length > 1 &&
+          (i !== parseInt(order[i]) || order[i] === undefined)
+        ) {
+          console.log('masuk else');
           await this.setState({
             inputIndex: i,
           });
@@ -213,10 +217,10 @@ class OrdersOld extends Component {
     await this.getFirebaseSize();
     await this.inputIndex();
     console.log('ini dari input index' + this.state.inputIndex);
-    // console.log(this.props.dataUser[0].email);
+    // console.log(this.props.dataUser.email);
     firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       .doc(`order${this.state.inputIndex}`)
       .set({
@@ -609,7 +613,7 @@ class OrdersOld extends Component {
                 <Thumbnail
                   large
                   source={{
-                    uri: this.props.dataUser[0].photo,
+                    uri: this.props.dataUser.photo,
                   }}
                 />
               </Col>
@@ -634,7 +638,7 @@ class OrdersOld extends Component {
                       color: '#dadbe4',
                       fontWeight: 'bold',
                     }}>
-                    {this.props.dataUser[0].username}
+                    {this.props.dataUser.name}
                   </Text>
                 </Row>
                 <Row
@@ -648,7 +652,7 @@ class OrdersOld extends Component {
                       color: '#dadbe4',
                     }}>
                     {' '}
-                    {this.props.dataUser[0].alamat}
+                    {this.props.dataUser.alamat}
                   </Text>
                 </Row>
               </Col>

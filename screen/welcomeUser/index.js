@@ -25,7 +25,7 @@ class WelcomeUser extends Component {
 
     await firestore()
       .collection('transactions')
-      .doc(`${data[0].email}`)
+      .doc(`${data.email}`)
       .collection('orders')
       .get()
       .then((snap) => (size = snap.size))
@@ -39,7 +39,7 @@ class WelcomeUser extends Component {
     let order = [];
     await firestore()
       .collection('transactions')
-      .doc(`${this.props.dataUser[0].email}`)
+      .doc(`${this.props.dataUser.email}`)
       .collection('orders')
       // .doc(`order${i}`)
       .get()
@@ -81,7 +81,7 @@ class WelcomeUser extends Component {
                   marginTop: 30,
                 }}
                 source={{
-                  uri: this.props.dataUser[0].photo,
+                  uri: this.props.dataUser.photo,
                 }}></Image>
             </View>
 
@@ -90,7 +90,7 @@ class WelcomeUser extends Component {
                 marginVertical: 20,
               }}>
               <Text style={{fontSize: 30, fontWeight: 'bold', color: 'white'}}>
-                Hello, {this.props.dataUser[0].username}
+                Hello, {this.props.dataUser.name}
               </Text>
             </View>
 

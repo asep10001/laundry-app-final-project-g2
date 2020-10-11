@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Image} from 'react-native';
+import {Image, Alert} from 'react-native';
 import {firebase, SQLiteContext} from '../../config';
 import {
   View,
@@ -38,7 +38,7 @@ class RegisterOld extends Component {
     const data = [];
     await this.props.sqlite
       .runQuery(
-        `update user set username=${dataNow.username}, alamat=${dataNow.alamat}, photo=${dataNow.photo}, email=${dataNow.email}`,
+        `update user set username='${dataNow.username}', alamat='${dataNow.alamat}', photo='${dataNow.photo}', email='${dataNow.email}'`,
         [],
       )
       .then(this.props.sqlite.runQuery(`select * from user`, []))
@@ -77,7 +77,22 @@ class RegisterOld extends Component {
             username: user.username,
           },
         });
+
+        auth().signInWithEmailAndPassword(user.email, user.password);
+
         console.log('User account created & signed in!');
+      })
+      .then(() => {
+        Alert.alert(
+          `SELAMAT DATANG ${user.username.toUpperCase()}, SILAHKAN LOGIN`,
+          `Silahkan log in untuk melanjutkan`,
+          [
+            {
+              text: 'OK',
+              onPress: () => this.props.navigation.navigate('Log In'),
+            },
+          ],
+        );
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {

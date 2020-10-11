@@ -38,18 +38,24 @@ class LoginOld extends Component {
     };
   }
 
-  componentDidMount() {}
+  // componentDidMount() {}
   subcriber = async (collection, document) => {
-    const custDocument = await firestore()
+    await firestore()
       .collection(collection)
       .doc(document)
-      .get();
-    // console.log('user now ' + custDocument.data());
+      .get()
+      .then((snap)=>{
+        this.props.setDataUSer(snap.data())
+        this.setState({
+          userNow: snap.data(),
+        });
+      })
+    console.info(JSON.stringify(this.props.dataUser))
+    await this.cabangSubcriber('branch', this.props.dataUser.alamat);
 
-    this.setState({
-      userNow: custDocument.data(),
-    });
-    this.userNowSQLite(custDocument.data());
+
+
+    // this.userNowSQLite(custDocument.data());
   };
 
   cabangSubcriber = async (collection, document) => {
@@ -68,84 +74,83 @@ class LoginOld extends Component {
     });
 
     // alert(JSON.stringify(data));
-    this.cabangNowSQLite(data);
+    this.props.setDataCabang(data);
   };
 
-  cabangNowSQLite = async (dataNow) => {
-    // console.log('datanow ' + JSON.stringify(dataNow));
-    const data = [];
-    for (let i = 0; i < dataNow.length; i++) {
-      this.props.sqlite
-        .runQuery(
-          ' insert into branch values (?, ?, ?, ?)',
-          [i + 1, dataNow[i].alamat, dataNow[i].branch, dataNow[i].photo],
-          [],
-        )
-        .then(() => console.info('successfully inserting data cabang'))
-        .catch((err) => {
-          this.props.sqlite.runQuery(
-            `update branch set id='${i + 1}', alamat='${
-              dataNow[i].alamat
-            }', branch='${dataNow[i].branch}', photo='${
-              dataNow[i].photo
-            }' where id='${i + 1}'`,
-            [],
-          );
-        });
-      console.log(i);
-      continue;
-    }
-    this.props.sqlite.runQuery(`select * from branch`, []).then(([results]) => {
-      console.log(results.rows.item(0));
-      for (let i = 0; i < 100; i++) {
-        if (results.rows.item(i) !== undefined) {
-          data.push(results.rows.item(i));
-        }
-      }
-      // alert(JSON.stringify(data));
-      this.props.setDataCabang(data);
-    });
-  };
+  // cabangNowSQLite = async (dataNow) => {
+  //   // console.log('datanow ' + JSON.stringify(dataNow));
+  //   const data = [];
+  //   for (let i = 0; i < dataNow.length; i++) {
+  //     this.props.sqlite
+  //       .runQuery(
+  //         ' insert into branch values (?, ?, ?, ?)',
+  //         [i + 1, dataNow[i].alamat, dataNow[i].branch, dataNow[i].photo],
+  //         [],
+  //       )
+  //       .then(() => console.info('successfully inserting data cabang'))
+  //       .catch((err) => {
+  //         this.props.sqlite.runQuery(
+  //           `update branch set id='${i + 1}', alamat='${
+  //             dataNow[i].alamat
+  //           }', branch='${dataNow[i].branch}', photo='${
+  //             dataNow[i].photo
+  //           }' where id='${i + 1}'`,
+  //           [],
+  //         );
+  //       });
+  //     console.log(i);
+  //     continue;
+  //   }
+  //   this.props.sqlite.runQuery(`select * from branch`, []).then(([results]) => {
+  //     console.log(results.rows.item(0));
+  //     for (let i = 0; i < 100; i++) {
+  //       if (results.rows.item(i) !== undefined) {
+  //         data.push(results.rows.item(i));
+  //       }
+  //     }
+  //     // alert(JSON.stringify(data));
+  //     this.props.setDataCabang(data);
+  //   });
+  // };
 
-  userNowSQLite = async (dataNow) => {
-    // console.log('datanow ' + JSON.stringify(dataNow));
-    const data = [];
-    await this.props.sqlite.runQuery(
-      `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}', email='${dataNow.email}' where id='1'`,
-      [],
-    );
-    await this.orderUserSQLite();
+  // userNowSQLite = async (dataNow) => {
+  //   // console.log('datanow ' + JSON.stringify(dataNow));
+  //   const data = [];
+  //   await this.props.sqlite.runQuery(
+  //     `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}', email='${dataNow.email}' where id='1'`,
+  //     [],
+  //   );
+  //   // await this.orderUserSQLite();
 
-    this.cabangSubcriber('branch', dataNow.alamat);
-    this.props.sqlite.runQuery(`select * from user`, []).then(([results]) => {
-      console.log(results.rows.item(0));
-      for (let i = 0; i < 100; i++) {
-        if (results.rows.item(i) !== undefined) {
-          data.push(results.rows.item(i));
-        }
-      }
-      this.props.setDataUSer(data);
-    });
-  };
+  //   await this.props.sqlite.runQuery(`select * from user`, []).then(([results]) => {
+  //     console.log(results.rows.item(0));
+  //     for (let i = 0; i < 100; i++) {
+  //       if (results.rows.item(i) !== undefined) {
+  //         data.push(results.rows.item(i));
+  //       }
+  //     }
+  //     this.props.setDataUSer(data);
+  //   });
+  // };
 
-  orderUserSQLite = async () => {
-    console.log(this.state.user.email);
-    const filterData = [];
-    await this.props.sqlite
-      .runQuery(
-        `select * from orders where email='${this.state.user.email}'`,
-        [],
-      )
-      .then(([results]) => {
-        for (let i = 0; i < 100; i++) {
-          if (results.rows.item(i) !== undefined) {
-            filterData.push(results.rows.item(i));
-          }
-        }
-        this.props.setDataOrders(filterData);
-        // alert(this.props.dataOrder)
-      });
-  };
+  // orderUserSQLite = async () => {
+  //   console.log(this.state.user.email);
+  //   const filterData = [];
+  //   await this.props.sqlite
+  //     .runQuery(
+  //       `select * from orders where email='${this.state.user.email}'`,
+  //       [],
+  //     )
+  //     .then(([results]) => {
+  //       for (let i = 0; i < 100; i++) {
+  //         if (results.rows.item(i) !== undefined) {
+  //           filterData.push(results.rows.item(i));
+  //         }
+  //       }
+  //       this.props.setDataOrders(filterData);
+  //       // alert(this.props.dataOrder)
+  //     });
+  // };
   handleTextEmail = (text) => {
     this.setState({
       user: {
@@ -172,8 +177,9 @@ class LoginOld extends Component {
       })
       .then(() => {
         this.props.setStatusLogin();
+        alert(JSON.stringify(this.props.dataUser))
       //  this.props.setStatusLogin();
-        alert('User signed in!');
+        // alert(JSON.stringify(this.props.dataUser));
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
