@@ -16,6 +16,10 @@ export class firebaseApp extends Component {
       console.log(custDocument)
   };
 
+//   registeredAndLoggedin () => {
+      
+//   }
+
   render() {
     return <div></div>;
   }

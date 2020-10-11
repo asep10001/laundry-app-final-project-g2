@@ -22,8 +22,27 @@ import {Card} from 'react-native-elements';
 import {connect} from 'react-redux';
 import SQLite from 'react-native-sqlite-storage';
 import {ScrollView} from 'react-native-gesture-handler';
-import {setLogin, setDataUser, setDataCabang, setDataOrders} from '../actions';
-import {Home, Register, Login, Orders, ServiceOptions} from '../screen';
+import {
+  setLogin,
+  setDataUser,
+  setDataCabang,
+  setDataOrders,
+  setReady,
+} from '../actions';
+import {
+  Home,
+  Register,
+  Login,
+  Orders,
+  ServiceOptions,
+  OtherOptions,
+  StatusOrder,
+  SplashScreen01,
+  SplashScreen02,
+  SplashScreen03,
+  SplashScreen04,
+  WelcomeUser,
+} from '../screen';
 import {SQLiteContext} from '../config';
 import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
 
@@ -73,7 +92,7 @@ CustomDrawerContent = (props) => {
               <Text
                 style={{
                   color: '#ffff',
-                  fontWeight: 'bold'
+                  fontWeight: 'bold',
                 }}>
                 {props.data.name.toUpperCase()}
               </Text>
@@ -91,11 +110,10 @@ CustomDrawerContent = (props) => {
       </Container>
       <DrawerItemList {...props} />
       <Button
-      title="LOG OUT"
-      onPress={()=>props.setUserLogin()}
-      >
-
-      </Button>
+        title="LOG OUT"
+        onPress={() => {
+          props.setUserLogin();
+        }}></Button>
     </DrawerContentScrollView>
   );
 };
@@ -103,23 +121,54 @@ CustomDrawerContent = (props) => {
 export class NavBarOld extends Component {
   constructor(props) {
     super(props);
-
+    // this.fecthingUserSQL();
+    // this.fecthingCabangSQL();
+    // this.fecthingOrdersSQL();
     this.state = {
+      isReady: false,
       isLoggedIn: this.props.statusLogin,
-      userData:[]
+      userData: [],
+      servicesCost: 0,
+      orders: {
+        branch: 'kemang',
+        cost: '10000',
+        duration: 3,
+        item_weigh: 1,
+        services: 'setrika',
+      },
+      totalHarga: 0,
     };
   }
 
-  fecthingUserSQL = () => {
-    const data = [];
-    this.props.sqlite.runQuery('SELECT * FROM user', []).then(([results]) => {
-      for (let i = 0; i < 100; i++) {
-        if (results.rows.item(i) !== undefined) {
-          data.push(results.rows.item(i));
-        }
+  getHarga = () => {
+    const data = this.props.dataOrder;
+    let totalHarga = 0;
+    for (let i = 0; i < data.length; i++) {
+      if (data[i].status === 'pending') {
+        totalHarga += parseInt(data[i].cost);
       }
-      this.props.setDataUSer(data);
+    }
+    this.setState({
+      totalHarga: totalHarga,
     });
+  };
+
+  fecthingUserSQL = async () => {
+    const data = [];
+    await this.props.sqlite
+      .runQuery('SELECT * FROM user', [])
+      .then(([results]) => {
+        for (let i = 0; i < 10; i++) {
+          // console.log(results.rows.item(1) !== undefined)
+          if (results.rows.item(i) !== undefined) {
+            data.push(results.rows.item(i));
+          }
+        }
+        this.props.setDataUSer(data);
+        // console.log(`data user`  + data);
+      });
+
+    return data;
   };
 
   fecthingCabangSQL = () => {
@@ -137,9 +186,11 @@ export class NavBarOld extends Component {
         }
         this.props.setDataCabang(data);
       })
-      .then(this.setState({
-        userData: data
-      }))
+      .then(
+        this.setState({
+          userData: data,
+        }),
+      )
       .catch((err) => console.log('tidak bisa fetching sql', err.message));
   };
 
@@ -147,7 +198,7 @@ export class NavBarOld extends Component {
     let data = [];
     this.props.sqlite
       .runQuery(
-        'SELECT orders.item_weigh, orders.cost, orders.services , orders.duration FROM orders JOIN user ON user.id = orders.userId',
+        `select * from orders where email='${this.props.dataUser.email}'`,
         [],
       )
       .then(([results]) => {
@@ -175,9 +226,8 @@ export class NavBarOld extends Component {
   };
 
   componentDidMount() {
-    this.fecthingUserSQL();
-    this.fecthingCabangSQL();
-    this.fecthingOrdersSQL();
+    // this.fecthingUserSQL();
+    // this.fecthingCabangSQL();
   }
 
   userLoggedin = () => {
@@ -188,16 +238,16 @@ export class NavBarOld extends Component {
             <CustomDrawerContent
               {...props}
               data={{
-                photo: this.props.dataUser[0].photo,
-                name: this.props.dataUser[0].username,
-                alamat: this.props.dataUser[0].alamat,
+                photo: this.props.dataUser.photo,
+                name: this.props.dataUser.name,
+                alamat: this.props.dataUser.alamat,
 
                 // name: 'Asep Agus Heri Hermawan',
                 // alamat: 'jakarta selatan',
                 // photo:
                 //   'https://cdn3.iconfinder.com/data/icons/avatar-color/64/52-512.png',
               }}
-              setUserLogin ={this.props.setStatusLogin}
+              setUserLogin={this.props.setStatusLogin}
             />
           )}
           drawerStyle={{
@@ -207,9 +257,38 @@ export class NavBarOld extends Component {
           hideStatusBar="true"
           drawerType="back">
           <Drawer.Screen name="Home">
-            {(props) => <Home {...props} />}
+            {(props) => <WelcomeUser {...props} />}
           </Drawer.Screen>
-          <Drawer.Screen name="Orders" component={Orders} />
+          <Drawer.Screen name="Orders">
+            {(props) => (
+              <Orders
+                {...props}
+                orderServices={this.state.orders.services}
+                orderItemWeigh={this.state.orders.item_weigh}
+                orderDuration={this.state.orders.duration}
+                orderCost={this.state.orders.cost}
+                orderBranch={this.state.orders.branch}
+                servicesCost={this.state.servicesCost}
+                setOrdersServices={this.setOrdersServices}
+                setOrdersBranch={this.setOrdersBranch}
+                setOrdersCost={this.setOrdersCost}
+                setOrdersItemWeigh={this.setOrdersItemWeigh}
+                setOrdersDuration={this.setOrdersDuration}
+                setServicesCost={this.setServicesCost}
+                getHarga={this.getHarga}
+                totalHarga={this.state.totalHarga}
+              />
+            )}
+          </Drawer.Screen>
+          <Drawer.Screen name="Pesanan Saya">
+            {(props) => (
+              <StatusOrder
+                {...props}
+                getHarga={this.getHarga}
+                totalHarga={this.state.totalHarga}
+              />
+            )}
+          </Drawer.Screen>
         </Drawer.Navigator>
       </>
     );
@@ -217,20 +296,134 @@ export class NavBarOld extends Component {
 
   userLoggedout = () => {
     return (
-      <Drawer.Navigator>
-        <Drawer.Screen name="Home">
+      <Stack.Navigator headerMode="false">
+        <Stack.Screen name="Home">
           {(props) => <Home {...props} />}
-        </Drawer.Screen>
-        <Drawer.Screen name="Register" component={Register} />
-        <Drawer.Screen name="Log In" component={Login} />
-      </Drawer.Navigator>
+        </Stack.Screen>
+        <Stack.Screen name="Register" component={Register} />
+        <Stack.Screen name="Log In" component={Login} />
+      </Stack.Navigator>
     );
   };
 
+  spalshScreen = () => {
+    return (
+      <Stack.Navigator
+        navigationOption={{
+          swipeEnabled: true,
+        }}
+        headerMode="false">
+        <Stack.Screen name="01" component={SplashScreen01} />
+        <Stack.Screen name="02" component={SplashScreen02} />
+        <Stack.Screen name="03" component={SplashScreen03} />
+        <Stack.Screen name="04">
+          {(props) => (
+            <SplashScreen04 {...props} setIsReady={this.setIsReady} />
+          )}
+        </Stack.Screen>
+      </Stack.Navigator>
+    );
+  };
+  setIsReady = () => {
+    this.setState({
+      isReady: !this.state.isReady,
+    });
+  };
+  setOrdersBranch = (data) => {
+    const {cost, duration, item_weigh, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch: data,
+        cost,
+        duration,
+        item_weigh,
+        services,
+      },
+    });
+  };
+
+  setServicesCost = (data) => {
+    this.setState({
+      servicesCost: data,
+    });
+  };
+
+  setOrdersServices = (data) => {
+    const {branch, cost, duration, item_weigh} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost,
+        duration,
+        item_weigh,
+        services: data,
+      },
+    });
+  };
+
+  setOrdersDuration = (data) => {
+    const {branch, cost, item_weigh, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost,
+        duration: data,
+        item_weigh,
+        services,
+      },
+    });
+  };
+
+  setOrdersCost = (data) => {
+    const {branch, duration, item_weigh, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost: data,
+        duration,
+        item_weigh,
+        services,
+      },
+    });
+  };
+
+  setOrdersItemWeigh = (data) => {
+    const {branch, cost, duration, services} = this.state.orders;
+    this.setState({
+      orders: {
+        branch,
+        cost,
+        duration,
+        item_weigh: data,
+        services,
+      },
+    });
+  };
+
+  showScreen = () => {
+    if (this.props.isReady === false && this.props.statusLogin === false) {
+      return (
+        alert(this.props.isReady === false && this.props.statusLogin === false),
+        this.spalshScreen()
+      );
+    } else if (
+      this.props.isReady === true &&
+      this.props.statusLogin === false
+    ) {
+      return this.userLoggedout();
+    } else {
+      return this.userLoggedin();
+    }
+  };
   render() {
     return (
       <NavigationContainer>
-        {this.props.statusLogin ? this.userLoggedout() : this.userLoggedin()}
+        {/* {this.props.isReady === false
+          ? this.spalshScreen()
+          : this.state.isLoggedIn === false
+          ? this.userLoggedout()
+          : this.userLoggedin()} */}
+        {this.showScreen()}
       </NavigationContainer>
     );
   }
@@ -239,6 +432,8 @@ export class NavBarOld extends Component {
 const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
+  isReady: state.ready.isReady,
+  dataOrder: state.orders.orders,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -246,6 +441,7 @@ const mapDispatchToProps = (dispatch) => ({
   setDataUSer: (payload) => dispatch(setDataUser(payload)),
   setDataCabang: (payload) => dispatch(setDataCabang(payload)),
   setDataOrders: (payload) => dispatch(setDataOrders(payload)),
+  setIsReady: () => dispatch(setReady()),
 });
 
 class NavBar extends Component {
