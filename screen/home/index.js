@@ -25,8 +25,7 @@ export class Home extends Component {
   }
 
   getUser = async () => {
-    const custDocument = await firebase
-      .firestore()
+    const custDocument = await firestore()
       .collection('customers')
       .doc('rerIymvXfcl5xNQFh5B1')
       .get();

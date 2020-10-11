@@ -27,7 +27,7 @@ class Splash extends Component {
         return new Promise((resolve) =>
           setTimeout(
             () => { resolve('result') },
-            2000
+            5000
           )
         );
       }
@@ -37,7 +37,7 @@ class Splash extends Component {
             <Animatable.View style={styles.view}>
                 <Animatable.Image 
                     animation="bounceIn"
-                    duration={1500}
+                    duration={3000}
                     iterationDelay={500}
                     source={require('../../assets/images/logos.png')}
                     resizeMode={'stretch'}
@@ -45,10 +45,23 @@ class Splash extends Component {
                 />
 
                 <Animatable.Text 
-                    animation="fadeIn"
-                    duration
+                    animation="flipInX"
+                    duration={3000}
                     style={styles.text}>
-                    Clean Laundry
+                    YO-NYUCI
+                </Animatable.Text>
+
+                <Animatable.Text 
+                    animation="slideInRight"
+                    duration={1500}
+                    style={styles.text1}>
+                    Final Project Team 01
+                </Animatable.Text>
+                <Animatable.Text 
+                    animation="slideInRight"
+                    duration={1500}
+                    style={styles.text2}>
+                    G2|Academy
                 </Animatable.Text>
             </Animatable.View>
         );
@@ -61,9 +74,19 @@ const logo_height = height * 0.5 * 0.5
 const styles = StyleSheet.create({
     view: {
         flex:1,
-        backgroundColor:'teal',
+        backgroundColor:'#03b876',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    text1: {
+        color: 'white',
+        fontSize: 12,
+        fontWeight: 'bold', 
+    },
+    text2: {
+        color: '#fcae18',
+        fontSize: 18,
+        fontWeight: 'bold', 
     },
     text: {
         color: 'white',

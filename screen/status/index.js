@@ -74,6 +74,8 @@ class StatusOrderOld extends Component {
     });
 
     await this.props.getFirebaseData();
+    this.props.getHarga();
+
   };
 
   screenShow = () => {
@@ -227,17 +229,17 @@ class StatusOrderOld extends Component {
 
   isPaid = () => {
     if (this.state.isPaid === true) {
-      Alert.alert(
-        'TERIMAKSIH',
-        'Terimakasih sudah membayar. Kami sudah menghubungi pihak laundry dan akan segera memberitahukan anda tentang respond dari laundry tersebut',
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('OK was pressed!'),
-          },
-        ],
-      );
       return (
+        Alert.alert(
+          'TERIMAKSIH',
+          'Terimakasih sudah membayar. Kami sudah menghubungi pihak laundry dan akan segera memberitahukan anda tentang respond dari laundry tersebut',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('OK was pressed!'),
+            },
+          ],
+        ),
         <View style={{marginVertical: 20}}>
           <Button
             style={{
@@ -249,7 +251,7 @@ class StatusOrderOld extends Component {
             }}
             onPress={() => {
               this.addOrderFirebase(this.props.dataOrder);
-              this.setIsPaid(true);
+              this.setIsPaid(true)
             }}>
             <Text style={{fontSize: style.label.fontSize, fontWeight: 'bold'}}>
               BAYAR
