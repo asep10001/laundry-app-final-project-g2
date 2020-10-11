@@ -25,6 +25,7 @@ import {
   Image,
 } from 'react-native';
 import {setDataOrders} from '../../actions';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 class StatusOrderOld extends Component {
   constructor(props) {
@@ -51,7 +52,7 @@ class StatusOrderOld extends Component {
 
   addOrderFirebase = async (data) => {
     // console.log(JSON.stringify(data));
-   await  data.forEach((item) => {
+    await data.forEach((item) => {
       firestore()
         .collection('transactions')
         .doc(`${this.props.dataUser[0].email}`)
@@ -209,7 +210,7 @@ class StatusOrderOld extends Component {
                   }}>
                   <Text
                     style={{fontSize: style.label.fontSize, color: 'white'}}>
-                    WAITING
+                    {item.status.toUpperCase()}
                   </Text>
                 </Button>
               )
@@ -367,17 +368,45 @@ class StatusOrderOld extends Component {
               style={{width: 125, height: 108}}></Image>
           </View>
           <View style={{justifyContent: 'center', alignItems: 'center'}}>
-            <Text
-              style={{
-                fontSize: style.descTotalHarga.fontSize,
-                fontWeight: 'bold',
-              }}>
-              Total Harga yang Harus dibayarkan adalah:{' '}
-            </Text>
-            <Text
-              style={{fontSize: style.totalHarga.fontSize, fontWeight: 'bold'}}>
-              Rp. {this.props.totalHarga},-
-            </Text>
+            {this.props.totalHarga === 0 ? (
+              <>
+                <TouchableOpacity
+                  onPress={() => this.props.navigation.navigate('Orders')}>
+                  <Text
+                    style={{
+                      fontSize: style.label.fontSize - 5,
+                      fontWeight: 'bold',
+                    }}>
+                    TIDAK ADA TRANSAKSI YANG PERLU DI BAYAR
+                  </Text>
+
+                  <Text
+                    style={{
+                      fontSize: style.label.fontSize - 5,
+                      fontWeight: 'bold',
+                    }}>
+                    CLICK DI SINI UNTUK MELAKUKAN TRANSAKSI
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <>
+                <Text
+                  style={{
+                    fontSize: style.descTotalHarga.fontSize,
+                    fontWeight: 'bold',
+                  }}>
+                  Total Harga yang Harus dibayarkan adalah:{' '}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: style.totalHarga.fontSize,
+                    fontWeight: 'bold',
+                  }}>
+                  Rp. {this.props.totalHarga},-
+                </Text>
+              </>
+            )}
           </View>
         </View>
         <Content style={{marginHorizontal: style.label.fontSize}}>
@@ -408,21 +437,21 @@ class StatusOrder extends Component {
     super(props);
 
     this.state = {
-      totalHarga: 0,
+      // totalHarga: 0,
       statusOrder: '',
     };
   }
 
-  getHarga = () => {
-    const data = this.props.dataOrder;
-    let totalHarga = 0;
-    for (let i = 0; i < data.length; i++) {
-      totalHarga += parseInt(data[i].cost);
-    }
-    this.setState({
-      totalHarga: totalHarga,
-    });
-  };
+  // getHarga = () => {
+  //   const data = this.props.dataOrder;
+  //   let totalHarga = 0;
+  //   for (let i = 0; i < data.length; i++) {
+  //     totalHarga += parseInt(data[i].cost);
+  //   }
+  //   this.setState({
+  //     totalHarga: totalHarga,
+  //   });
+  // };
 
   getFirebaseData = async () => {
     let size = 0;

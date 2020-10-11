@@ -144,7 +144,9 @@ export class NavBarOld extends Component {
     const data = this.props.dataOrder;
     let totalHarga = 0;
     for (let i = 0; i < data.length; i++) {
-      totalHarga += parseInt(data[i].cost);
+      if (data[i].status === 'pending') {
+        totalHarga += parseInt(data[i].cost);
+      }
     }
     this.setState({
       totalHarga: totalHarga,
@@ -431,7 +433,7 @@ const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
   isReady: state.ready.isReady,
-  dataOrder: state.orders.orders
+  dataOrder: state.orders.orders,
 });
 
 const mapDispatchToProps = (dispatch) => ({
