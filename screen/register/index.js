@@ -34,22 +34,21 @@ class RegisterOld extends Component {
     };
   }
 
-  userNowSQLite = async (dataNow) => {
-    const data = [];
-    await this.props.sqlite
-      .runQuery(
-        `update user set username='${dataNow.username}', alamat='${dataNow.alamat}', photo='${dataNow.photo}', email='${dataNow.email}'`,
-        [],
-      )
-      .then(this.props.sqlite.runQuery(`select * from user`, []))
-      .then(([results]) => {
-        for (let i = 0; i < 100; i++) {
-          if (results.rows.item(i) !== undefined) {
-            data.push(results.rows.item(i));
-          }
-        }
-        this.props.setDataUSer(data);
+  subcriber = async (collection, document) => {
+    await firestore()
+      .collection(collection)
+      .doc(document)
+      .get()
+      .then((snap) => {
+        this.props.setDataUSer(snap.data());
+        this.setState({
+          userNow: snap.data(),
+        });
       });
+    console.info(JSON.stringify(this.props.dataUser));
+    // await this.cabangSubcriber('branch', this.props.dataUser.alamat);
+
+    // this.userNowSQLite(custDocument.data());
   };
   addDataFirebase = (data) => {
     firestore()
@@ -66,33 +65,16 @@ class RegisterOld extends Component {
       });
   };
 
-  createUser = (user) => {
-    auth()
+  createUser = async (user) => {
+    await auth()
       .createUserWithEmailAndPassword(user.email, user.password)
       .then(this.addDataFirebase(user))
-      .then(this.userNowSQLite(user))
+      .then(this.subcriber('customers', user.email));
+
+    await auth()
+      .signInWithEmailAndPassword(user.email, user.password)
       .then(() => {
-        this.setState({
-          user: {
-            username: user.username,
-          },
-        });
-
-        auth().signInWithEmailAndPassword(user.email, user.password);
-
         console.log('User account created & signed in!');
-      })
-      .then(() => {
-        Alert.alert(
-          `SELAMAT DATANG ${user.username.toUpperCase()}, SILAHKAN LOGIN`,
-          `Silahkan log in untuk melanjutkan`,
-          [
-            {
-              text: 'OK',
-              onPress: () => this.props.navigation.navigate('Log In'),
-            },
-          ],
-        );
       })
       .catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
@@ -105,6 +87,11 @@ class RegisterOld extends Component {
 
         console.error(error);
       });
+    alert(`SELAMAT DATANG ${user.username.toUpperCase()}!`);
+
+    this.props.setStatusLogin();
+
+    this.props.navigation.navigate('Home')
   };
 
   handleTextEmail = (text) => {
