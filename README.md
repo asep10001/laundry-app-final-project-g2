@@ -2,7 +2,14 @@
 ini merupakan final project app react native dengan judul Laundry App
 <h1>UNTUK REGISTRASI</h1>
 
-<p>silahkan gunakan alamat 'jakarta selatan' (tidak memakai kutip dan semuanya lower case/ huruf kecil)</p>
+<ul>
+<li>silahkan gunakan alamat 'jakarta selatan' (tidak memakai kutili dan semuanya lower case/ huruf kecil)</li>
+<li>silahkan gunakan username: user@example.com dengan password: 000000 untuk masuk tanpa harus sign up terlebih dahulu</li>
+<li>silahkan swipe (geser) ke sebelah kiri untuk memunculkan drawer menu ketika sudah signed in</li>
+<li>halaman terakhir adalah halaman bayar dengan alert 'terimakasih anda sudah membayar...' dan tombol batalkan akan berubah menjadi status pemesanan laundry</li>
+<li>ketika tomba=ol bayar di tekan di asumsikan bahwa pembeli telah membeli dan membayar sehingga tulisan harga total di atas menjadi clickable sehingga akan membawa costumer kembali ke  halaman order</li>
+</ul>
+
 
 <H1>UNTUK DESIGN ADA BEBERAPA HALAMAN YAKNI</H1>
 
