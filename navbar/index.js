@@ -136,8 +136,20 @@ export class NavBarOld extends Component {
         item_weigh: 1,
         services: 'setrika',
       },
+      totalHarga: 0,
     };
   }
+
+  getHarga = () => {
+    const data = this.props.dataOrder;
+    let totalHarga = 0;
+    for (let i = 0; i < data.length; i++) {
+      totalHarga += parseInt(data[i].cost);
+    }
+    this.setState({
+      totalHarga: totalHarga,
+    });
+  };
 
   fecthingUserSQL = async () => {
     const data = [];
@@ -214,7 +226,6 @@ export class NavBarOld extends Component {
   componentDidMount() {
     this.fecthingUserSQL();
     this.fecthingCabangSQL();
-    // this.fecthingOrdersSQL();
   }
 
   userLoggedin = () => {
@@ -262,11 +273,19 @@ export class NavBarOld extends Component {
                 setOrdersItemWeigh={this.setOrdersItemWeigh}
                 setOrdersDuration={this.setOrdersDuration}
                 setServicesCost={this.setServicesCost}
+                getHarga={this.getHarga}
+                totalHarga={this.state.totalHarga}
               />
             )}
           </Drawer.Screen>
           <Drawer.Screen name="Pesanan Saya">
-            {(porps) => <StatusOrder />}
+            {(props) => (
+              <StatusOrder
+                {...props}
+                getHarga={this.getHarga}
+                totalHarga={this.state.totalHarga}
+              />
+            )}
           </Drawer.Screen>
         </Drawer.Navigator>
       </>
@@ -412,6 +431,7 @@ const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
   isReady: state.ready.isReady,
+  dataOrder: state.orders.orders
 });
 
 const mapDispatchToProps = (dispatch) => ({

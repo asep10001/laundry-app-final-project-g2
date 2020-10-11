@@ -4,6 +4,8 @@ import {connect} from 'react-redux';
 import {setDataUser, setDataCabang, setDataOrders} from '../../actions';
 import {setLogin} from '../../actions/setLogin';
 import {Text, View, Button} from 'native-base';
+import firestore from '@react-native-firebase/firestore';
+
 
 class WelcomeUser extends Component {
   constructor(props) {
@@ -17,8 +19,45 @@ class WelcomeUser extends Component {
     const component2 = () => <Text>Orders</Text>;
     const buttons = [{element: component1}, {element: component2}];
   }
-  componentDidMount() {
+
+  getFirebaseData = async (data) => {
+    let size = 0;
+
+    await firestore()
+      .collection('transactions')
+      .doc(`${data[0].email}`)
+      .collection('orders')
+      .get()
+      .then((snap) => (size = snap.size))
+      // .catch((err)=>{
+      //   'error', console.log(err.message)
+      // })
+    // .then(() => console.log(size));
+    console.log(size);
+
+
+    let order = [];
+    await firestore()
+      .collection('transactions')
+      .doc(`${this.props.dataUser[0].email}`)
+      .collection('orders')
+      // .doc(`order${i}`)
+      .get()
+      .then((snap) => {
+        // order.push(JSON.parse(snap.data().order));
+        snap.forEach((item) => {
+          order.push(JSON.parse(item.data().order));
+        });
+      });
+    // console.log(order);
+    this.props.setDataOrders(order);
+
+    //
+  }
+
+  async componentDidMount() {
     // alert(this.props.dataUser[0])
+ await this.getFirebaseData(this.props.dataUser)
   }
 
   render() {
@@ -87,6 +126,7 @@ class WelcomeUser extends Component {
 const mapStateToProps = (state) => ({
   statusLogin: state.auth.isLoggedin,
   dataUser: state.userData.dataUser,
+  dataOrder: state.orders.orders
 });
 
 const mapDispatchToProps = (dispatch) => ({

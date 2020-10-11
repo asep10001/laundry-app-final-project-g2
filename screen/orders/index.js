@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Image, ImageBackground} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
 import {
   Container,
   Header,
@@ -45,96 +46,202 @@ class OrdersOld extends Component {
       },
       costNow: this.props.orderCost,
       hargaCabang: 0,
+      orderLength: 0,
+      inputIndex: 0,
     };
   }
 
   componentDidMount() {}
 
-  addOrderToSQLite = async () => {
-    const data = [];
-    await this.props.sqlite
-      .runQuery(`select * from orders`, [])
-      .then(([results]) => {
-        for (let i = 0; i < 100; i++) {
-          if (results.rows.item(i) !== undefined) {
-            data.push(results.rows.item(i));
-          }
-        }
+  // addOrderToSQLite = async () => {
+  //   const data = [];
+  //   await this.props.sqlite
+  //     .runQuery(`select * from orders`, [])
+  //     .then(([results]) => {
+  //       for (let i = 0; i < 100; i++) {
+  //         if (results.rows.item(i) !== undefined) {
+  //           data.push(results.rows.item(i));
+  //         }
+  //       }
+  //     });
+  //   // if (data.length !== 0) {
+  //   //   await this.props.sqlite.runQuery(
+  //   //     `update orders set branch='${this.props.orderBranch}', item_weigh='${
+  //   //       this.state.selected.item_weigh
+  //   //     }', cost='${this.state.selected.cost}', services='${
+  //   //       this.props.orderServices
+  //   //     }', duration='${
+  //   //       this.state.selected.duration === '1000' ? 'REGULER' : 'KILAT'
+  //   //     }' where id='${data.length}'`,
+  //   //     [],
+  //   //   );
+  //   //   alert(JSON.stringify(data));
+  //   // } else {
+  //   alert(data.length);
+
+  //   let id = 0;
+  //   let hasil = [];
+  //   await this.props.sqlite
+  //     .runQuery(`select id from orders`)
+  //     .then(([results]) => {
+  //       console.log('ini results ' + results.rows.item(0).id);
+  //       for (let i = 0; i < 100; i++) {
+  //         if (results.rows.item(i) !== undefined) {
+  //           // if (results.)
+  //           hasil.push(results.rows.item(i).id);
+  //         } else {
+  //           break;
+  //         }
+  //       }
+  //       // alert(JSON.stringify(data))
+  //     })
+  //     .then(() => {
+  //       for (let i = 0; i < 100; i++) {
+  //         if (hasil[i] !== i) {
+  //           id = i;
+  //           break;
+  //         }
+  //       }
+  //     });
+
+  //   await this.props.sqlite.runQuery(
+  //     `insert into orders values (?, ?, ?, ?, ?, ?, ?, ?)`,
+  //     [
+  //       id.toString(),
+  //       this.props.dataUser[0].email.toString(),
+  //       this.props.orderBranch.toString(),
+  //       this.state.selected.item_weigh.toString(),
+  //       this.state.selected.cost.toString(),
+  //       this.props.orderServices.toString(),
+  //       (this.state.selected.duration === '1000'
+  //         ? 'REGULER'
+  //         : 'KILAT'
+  //       ).toString(),
+  //       "pending"
+  //     ],
+  //   );
+
+  //   const filterData = [];
+  //   await this.props.sqlite
+  //     .runQuery(
+  //       `select * from orders where email='${this.props.dataUser[0].email}'`,
+  //       [],
+  //     )
+  //     .then(([results]) => {
+  //       for (let i = 0; i < 100; i++) {
+  //         if (results.rows.item(i) !== undefined) {
+  //           filterData.push(results.rows.item(i));
+  //         }
+  //       }
+  //       // alert(JSON.stringify(data))
+  //     });
+
+  //   alert(JSON.stringify(filterData));
+  //   this.props.setDataOrders(filterData);
+  //   // }
+  // };
+
+  getFirebaseSize = async () => {
+    let size = 0;
+    await firestore()
+      .collection('transactions')
+      .doc(`${this.props.dataUser[0].email}`)
+      .collection('orders')
+      .get()
+      .then((snap) => (size = snap.size));
+    // .then(() => console.log(size));
+    console.log(size);
+    this.setState({
+      orderLength: size,
+    });
+  };
+
+  setOrderDataFromFirebase = async () => {
+    let order = [];
+    await firestore()
+      .collection('transactions')
+      .doc(`${this.props.dataUser[0].email}`)
+      .collection('orders')
+      // .doc(`order${i}`)
+      .get()
+      .then((snap) => {
+        // order.push(JSON.parse(snap.data().order));
+        snap.forEach((item) => {
+          order.push(JSON.parse(item.data().order));
+        });
       });
-    // if (data.length !== 0) {
-    //   await this.props.sqlite.runQuery(
-    //     `update orders set branch='${this.props.orderBranch}', item_weigh='${
-    //       this.state.selected.item_weigh
-    //     }', cost='${this.state.selected.cost}', services='${
-    //       this.props.orderServices
-    //     }', duration='${
-    //       this.state.selected.duration === '1000' ? 'REGULER' : 'KILAT'
-    //     }' where id='${data.length}'`,
-    //     [],
-    //   );
-    //   alert(JSON.stringify(data));
-    // } else {
-    alert(data.length);
+    // console.log(order);
+    this.props.setDataOrders(order);
+  };
 
-    let id = 0;
-    let hasil = [];
-    await this.props.sqlite
-      .runQuery(`select id from orders`)
-      .then(([results]) => {
-        console.log('ini results ' + typeof results.rows.item(0).id);
-        for (let i = 0; i < 100; i++) {
-          if (results.rows.item(i) !== undefined) {
-            // if (results.)
-            hasil.push(results.rows.item(i).id);
-          } else {
-            break;
-          }
-        }
-        // alert(JSON.stringify(data))
-      })
-      .then(() => {
-        for (let i = 0; i < 100; i++) {
-          if (hasil[i] !== i) {
-            id = i;
-            break;
-          }
-        }
+  inputIndex = async () => {
+    let order = [];
+    await firestore()
+      .collection('transactions')
+      .doc(`${this.props.dataUser[0].email}`)
+      .collection('orders')
+      // .doc(`order${i}`)
+      .get()
+      .then((snap) => {
+        // order.push(JSON.parse(snap.data().order));
+        snap.forEach((item) => {
+          order.push(JSON.parse(item.data().order).id);
+        });
       });
 
-    await this.props.sqlite.runQuery(
-      `insert into orders values (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        id.toString(),
-        this.props.dataUser[0].email.toString(),
-        this.props.orderBranch.toString(),
-        this.state.selected.item_weigh.toString(),
-        this.state.selected.cost.toString(),
-        this.props.orderServices.toString(),
-        (this.state.selected.duration === '1000'
-          ? 'REGULER'
-          : 'KILAT'
-        ).toString(),
-      ],
-    );
+    for (let i = 0; i < order.length+1; i++) {
+      if (parseInt(order[i]) === 0 && order.length === 1) {
+        // console.log(parseInt(order[i]) === 0 && order.length === 1)
+        await this.setState({
+          inputIndex: 1,
+        });
+        break;
+      } else {
+        if (order.length > 1 && (i !== parseInt(order[i]) || order[i] === undefined)) {
+        console.log('masuk else')
+          await this.setState({
+            inputIndex: i,
+          });
 
-    const filterData = [];
-    await this.props.sqlite
-      .runQuery(
-        `select * from orders where email='${this.props.dataUser[0].email}'`,
-        [],
-      )
-      .then(([results]) => {
-        for (let i = 0; i < 100; i++) {
-          if (results.rows.item(i) !== undefined) {
-            filterData.push(results.rows.item(i));
-          }
+          break;
         }
-        // alert(JSON.stringify(data))
-      });
+      }
+    }
+  };
 
-    alert(JSON.stringify(filterData));
-    this.props.setDataOrders(filterData);
-    // }
+  addOrderFirebase = async () => {
+    await this.getFirebaseSize();
+    await this.inputIndex();
+    console.log('ini dari input index' + this.state.inputIndex);
+    // console.log(this.props.dataUser[0].email);
+    firestore()
+      .collection('transactions')
+      .doc(`${this.props.dataUser[0].email}`)
+      .collection('orders')
+      .doc(`order${this.state.inputIndex}`)
+      .set({
+        order: `{
+            "id" : "${this.state.inputIndex}",
+          "branch": "${this.props.orderBranch}",
+          "cost": "${this.state.selected.cost}",
+         "duration": "${
+           this.state.selected.duration === '1000' ? 'REGULER' : 'KILAT'
+         }",
+          "item_weigh": "${this.state.selected.item_weigh}",
+          "services": "${this.props.orderServices}",
+          "status": "pending"}`,
+      });
+    console.log('Order added!');
+
+    await this.setOrderDataFromFirebase();
+
+    console.log('Data updated');
+
+    await this.props.getHarga();
+
+    console.log('Harga Updated');
+
+    this.props.navigation.navigate('Pesanan Saya');
   };
 
   onItemWeighChange = async (value) => {
@@ -180,7 +287,11 @@ class OrdersOld extends Component {
     return (
       <>
         <Container style={{marginHorizontal: 20}}>
-          <Content style={{backgroundColor: "rgba(123,217,185, 0.5)", paddingVertical: 20}}>
+          <Content
+            style={{
+              backgroundColor: 'rgba(123,217,185, 0.5)',
+              paddingVertical: 20,
+            }}>
             <Form>
               <Label>Berat Item (Maks 10 Kg)</Label>
               <Picker
@@ -209,62 +320,77 @@ class OrdersOld extends Component {
               <List>
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text style={{fontSize:11}}>CABANG</Text>
+                    <Text style={{fontSize: 11}}>CABANG</Text>
                   </Left>
                   <Right>
-                    <Text style={{fontSize:11}}>{this.props.orderBranch.toUpperCase()}</Text>
+                    <Text style={{fontSize: 11}}>
+                      {this.props.orderBranch.toUpperCase()}
+                    </Text>
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text style={{fontSize:11}}>SERVICE</Text>
+                    <Text style={{fontSize: 11}}>SERVICE</Text>
                   </Left>
                   <Right>
-                    <Text style={{fontSize:11}}>{this.props.orderServices.toUpperCase()}</Text>
+                    <Text style={{fontSize: 11}}>
+                      {this.props.orderServices.toUpperCase()}
+                    </Text>
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text style={{fontSize:11}}>BERAT BARANG</Text>
+                    <Text style={{fontSize: 11}}>BERAT BARANG</Text>
                   </Left>
                   <Right>
-                    <Text style={{fontSize:11}}>{this.state.selected.item_weigh}KG</Text>
+                    <Text style={{fontSize: 11}}>
+                      {this.state.selected.item_weigh}KG
+                    </Text>
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text style={{fontSize:11}}>DURASI PENGIRIMAN</Text>
+                    <Text style={{fontSize: 11}}>DURASI PENGIRIMAN</Text>
                   </Left>
                   <Right>
                     {this.state.selected.duration === '1000' ? (
-                      <Text style={{fontSize:11}}>REGULER</Text>
+                      <Text style={{fontSize: 11}}>REGULER</Text>
                     ) : (
-                      <Text style={{fontSize:11}}>KILAT</Text>
+                      <Text style={{fontSize: 11}}>KILAT</Text>
                     )}
                   </Right>
                 </ListItem>
 
                 <ListItem noIndent style={{backgroundColor: '#cde1f9'}}>
                   <Left>
-                    <Text style={{fontSize:15, fontWeight: 'bold'}}>TOTAL BAYAR</Text>
+                    <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                      TOTAL BAYAR
+                    </Text>
                   </Left>
                   <Right>
-                    <Text style={{fontSize:15, fontWeight: 'bold'}}>{this.state.selected.cost}</Text>
+                    <Text style={{fontSize: 15, fontWeight: 'bold'}}>
+                      {this.state.selected.cost}
+                    </Text>
                   </Right>
                 </ListItem>
               </List>
             </Content>
             <Content style={{marginTop: '10%'}}>
-              <Button style={{ 
-                width: '100%',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderRadius: 20,
-                backgroundColor: '#01b976'
-              }}onPress={() => this.addOrderToSQLite()}>
+              <Button
+                style={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  borderRadius: 20,
+                  backgroundColor: '#01b976',
+                }}
+                onPress={() => {
+                  this.addOrderFirebase();
+                  // this.inputIndex();
+                }}>
                 <Text>BAYAR</Text>
               </Button>
             </Content>
@@ -522,7 +648,7 @@ class OrdersOld extends Component {
                       color: '#dadbe4',
                     }}>
                     {' '}
-                   {this.props.dataUser[0].alamat}
+                    {this.props.dataUser[0].alamat}
                   </Text>
                 </Row>
               </Col>
@@ -545,7 +671,6 @@ class OrdersOld extends Component {
                   width: '100%',
                   justifyContent: 'center',
                   alignItems: 'center',
-                  
                 }}
                 onPress={() => this.setState({isServicesChosen: false})}>
                 <Text>KEMBALI MEMILIH SERVICE</Text>
