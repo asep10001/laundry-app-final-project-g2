@@ -34,4 +34,4 @@ ini merupakan final project app react native dengan judul Laundry App
 
 <H1>UNTUK DI AGRAM FLOWCHART BISA DI LIHAT DI </H1>
 
-<a href="https://drive.google.com/file/d/1apEGz2Lt_NUCKkDCETwyAguEPMVmol3e/view?usp=sharing">
+<a href="https://drive.google.com/file/d/1apEGz2Lt_NUCKkDCETwyAguEPMVmol3e/view?usp=sharing">FLOWCHART LAUNDRY APP</a>
