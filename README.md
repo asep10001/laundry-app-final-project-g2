@@ -8,6 +8,7 @@ ini merupakan final project app react native dengan judul Laundry App
 <li>silahkan swipe (geser) ke sebelah kiri untuk memunculkan drawer menu ketika sudah signed in</li>
 <li>halaman terakhir adalah halaman bayar dengan alert 'terimakasih anda sudah membayar...' dan tombol batalkan akan berubah menjadi status pemesanan laundry</li>
 <li>ketika tomba=ol bayar di tekan di asumsikan bahwa pembeli telah membeli dan membayar sehingga tulisan harga total di atas menjadi clickable sehingga akan membawa costumer kembali ke  halaman order</li>
+<li>yar
 </ul>
 
 
@@ -31,3 +32,6 @@ ini merupakan final project app react native dengan judul Laundry App
 <img src='assets\images\designs\15.jpg' width="200" height="300">
 <div>
 
+<H1>UNTUK DI AGRAM FLOWCHART BISA DI LIHAT DI </H1>
+
+<a href="https://drive.google.com/file/d/1apEGz2Lt_NUCKkDCETwyAguEPMVmol3e/view?usp=sharing">
