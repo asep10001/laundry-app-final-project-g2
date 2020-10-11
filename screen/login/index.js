@@ -177,7 +177,7 @@ class LoginOld extends Component {
       })
       .then(() => {
         this.props.setStatusLogin();
-        alert(JSON.stringify(this.props.dataUser))
+        // alert(JSON.stringify(this.props.dataUser))
       //  this.props.setStatusLogin();
         // alert(JSON.stringify(this.props.dataUser));
       })
