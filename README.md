@@ -15,9 +15,9 @@ ini merupakan final project app react native dengan judul Laundry App
 <H1>UNTUK DESIGN ADA BEBERAPA HALAMAN YAKNI</H1>
 
 <div>
-<img src='https://github.com/asep10001/laundry-app-final-project-g2/tree/master/designs/01.jpg' width="200" height="350">
-<img src='https://github.com/asep10001/laundry-app-final-project-g2/tree/master/designs/02.jpg' width="200" height="350">
-<img src='\designs\03.jpg' width="200" height="350">
+<img src='https://github.com/asep10001/laundry-app-final-project-g2/blob/master/designs/01.jpg' width="200" height="350">
+<img src='https://github.com/asep10001/laundry-app-final-project-g2/blob/master/designs/02.jpg' width="200" height="350">
+<img src='designs\03.jpg' width="200" height="350">
 <img src='assets\images\designs\04.jpg' width="200" height="350">
 <img src='assets\images\designs\05.jpg' width="200" height="350">
 <img src='assets\images\designs\06.jpg' width="200" height="350">
