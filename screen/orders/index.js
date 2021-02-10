@@ -3,25 +3,19 @@ import {Image, ImageBackground} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import {
   Container,
-  Header,
   Content,
   Card,
   CardItem,
   Thumbnail,
   Text,
   Button,
-  Icon,
   Left,
   Body,
   Right,
-  View,
-  Accordion,
-  Title,
   Label,
   Form,
   List,
-  ListItem,
-  Picker
+  ListItem
 } from 'native-base';
 
 import {TouchableOpacity} from 'react-native-gesture-handler';
@@ -32,6 +26,7 @@ import {setLogin, setDataUser, setDataOrders} from '../../actions';
 
 import {Input} from 'react-native-elements';
 import {SQLiteContext} from '../../config';
+import { Picker } from '@react-native-community/picker';
 
 class OrdersOld extends Component {
   constructor(props) {
@@ -249,7 +244,7 @@ class OrdersOld extends Component {
   };
 
   onItemWeighChange = async (value) => {
-    const {item_weigh, duration, cost} = this.state.selected;
+    const {duration} = this.state.selected;
     let costNow = this.state.costNow;
     await this.setState({
       selected: {
@@ -263,7 +258,7 @@ class OrdersOld extends Component {
   };
 
   onDurationChange = (value) => {
-    const {item_weigh, duration, cost} = this.state.selected;
+    const {item_weigh} = this.state.selected;
     // alert(this.constNow);
     let hitung = (parseInt(item_weigh) * parseInt(value)).toString();
     let hitungBerat = (

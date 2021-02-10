@@ -2,7 +2,7 @@ import SQLite from 'react-native-sqlite-storage';
 
 class SQLite3 {
   constructor() {
-    SQLite.DEBUG(true);
+    // SQLite.DEBUG(true);
     SQLite.enablePromise(true);
     this.conn = SQLite.openDatabase(
       'laundry.db',

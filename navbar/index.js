@@ -1,27 +1,18 @@
-import React, {Component} from 'react';
+import React, { Component, useState } from 'react';
 
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
   DrawerItemList,
-  DrawerItem,
 } from '@react-navigation/drawer';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/AntDesign';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {
-  View,
   Text,
   Button,
-  Alert,
-  RefreshControl,
-  Animated,
 } from 'react-native';
-import {Card} from 'react-native-elements';
-import {connect} from 'react-redux';
-import SQLite from 'react-native-sqlite-storage';
-import {ScrollView} from 'react-native-gesture-handler';
+import { connect } from 'react-redux';
 import {
   setLogin,
   setDataUser,
@@ -34,8 +25,6 @@ import {
   Register,
   Login,
   Orders,
-  ServiceOptions,
-  OtherOptions,
   StatusOrder,
   SplashScreen01,
   SplashScreen02,
@@ -43,16 +32,15 @@ import {
   SplashScreen04,
   WelcomeUser,
 } from '../screen';
-import {SQLiteContext} from '../config';
-import {Container, Content, Grid, Col, Thumbnail, Row} from 'native-base';
+import { SQLiteContext } from '../config';
+import { Container, Content, Grid, Col, Thumbnail, Row } from 'native-base';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
-const HomeStack = createStackNavigator();
-const SettingsStack = createStackNavigator();
-const Tab = createBottomTabNavigator();
 
-CustomDrawerContent = (props) => {
+const CustomDrawerContent = (props) => {
+  const [dataPengguna, setDataPengguna] = useState(props.data)
+  // alert("dari props.data " + JSON.stringify(props.dataUser))
   return (
     <DrawerContentScrollView {...props}>
       <Container
@@ -73,7 +61,7 @@ CustomDrawerContent = (props) => {
               <Thumbnail
                 large
                 source={{
-                  uri: props.data.photo,
+                  uri: dataPengguna.photo,
                 }}
               />
             </Col>
@@ -94,7 +82,7 @@ CustomDrawerContent = (props) => {
                   color: '#ffff',
                   fontWeight: 'bold',
                 }}>
-                {props.data.name.toUpperCase()}
+                {dataPengguna.name.toUpperCase()}
               </Text>
             </Row>
             <Row>
@@ -102,7 +90,7 @@ CustomDrawerContent = (props) => {
                 style={{
                   color: '#ffff',
                 }}>
-                {props.data.alamat}
+                {dataPengguna.alamat}
               </Text>
             </Row>
           </Content>
@@ -226,11 +214,10 @@ export class NavBarOld extends Component {
   };
 
   componentDidMount() {
-    // this.fecthingUserSQL();
-    // this.fecthingCabangSQL();
   }
 
   userLoggedin = () => {
+    // console.log('ini data user loggedin' + this.props.dataUser.name)
     return (
       <>
         <Drawer.Navigator
@@ -242,6 +229,7 @@ export class NavBarOld extends Component {
                 name: this.props.dataUser.name,
                 alamat: this.props.dataUser.alamat,
 
+                
                 // name: 'Asep Agus Heri Hermawan',
                 // alamat: 'jakarta selatan',
                 // photo:
@@ -330,7 +318,7 @@ export class NavBarOld extends Component {
     });
   };
   setOrdersBranch = (data) => {
-    const {cost, duration, item_weigh, services} = this.state.orders;
+    const { cost, duration, item_weigh, services } = this.state.orders;
     this.setState({
       orders: {
         branch: data,
@@ -349,7 +337,7 @@ export class NavBarOld extends Component {
   };
 
   setOrdersServices = (data) => {
-    const {branch, cost, duration, item_weigh} = this.state.orders;
+    const { branch, cost, duration, item_weigh } = this.state.orders;
     this.setState({
       orders: {
         branch,
@@ -362,7 +350,7 @@ export class NavBarOld extends Component {
   };
 
   setOrdersDuration = (data) => {
-    const {branch, cost, item_weigh, services} = this.state.orders;
+    const { branch, cost, item_weigh, services } = this.state.orders;
     this.setState({
       orders: {
         branch,
@@ -375,7 +363,7 @@ export class NavBarOld extends Component {
   };
 
   setOrdersCost = (data) => {
-    const {branch, duration, item_weigh, services} = this.state.orders;
+    const { branch, duration, item_weigh, services } = this.state.orders;
     this.setState({
       orders: {
         branch,
@@ -388,7 +376,7 @@ export class NavBarOld extends Component {
   };
 
   setOrdersItemWeigh = (data) => {
-    const {branch, cost, duration, services} = this.state.orders;
+    const { branch, cost, duration, services } = this.state.orders;
     this.setState({
       orders: {
         branch,
@@ -403,7 +391,6 @@ export class NavBarOld extends Component {
   showScreen = () => {
     if (this.props.isReady === false && this.props.statusLogin === false) {
       return (
-        alert(this.props.isReady === false && this.props.statusLogin === false),
         this.spalshScreen()
       );
     } else if (
@@ -453,5 +440,6 @@ class NavBar extends Component {
     );
   }
 }
+
 connect(mapStateToProps, mapDispatchToProps)(CustomDrawerContent);
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar);

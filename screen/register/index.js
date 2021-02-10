@@ -71,25 +71,25 @@ class RegisterOld extends Component {
       .then(this.addDataFirebase(user))
       .then(this.subcriber('customers', user.email));
 
-    await auth()
-      .signInWithEmailAndPassword(user.email, user.password)
-      .then(() => {
-        console.log('User account created & signed in!');
-      })
-      .catch((error) => {
-        if (error.code === 'auth/email-already-in-use') {
-          console.log('That email address is already in use!');
-        }
+    // await auth()
+    //   .signInWithEmailAndPassword(user.email, user.password)
+    //   .then(() => {
+    //     console.log('User account created & signed in!');
+    //   })
+    //   .catch((error) => {
+    //     if (error.code === 'auth/email-already-in-use') {
+    //       console.log('That email address is already in use!');
+    //     }
 
-        if (error.code === 'auth/invalid-email') {
-          console.log('That email address is invalid!');
-        }
+    //     if (error.code === 'auth/invalid-email') {
+    //       console.log('That email address is invalid!');
+    //     }
 
-        console.error(error);
-      });
-    alert(`SELAMAT DATANG ${user.username.toUpperCase()}!`);
+    //     console.error(error);
+    //   });
+    alert(`SELAMAT DATANG ${user.username.toUpperCase()}! SILAHKAN LAKUKAN LOG IN!`);
 
-    this.props.setStatusLogin();
+    // this.props.setStatusLogin();
 
     this.props.navigation.navigate('Home')
   };
@@ -212,13 +212,14 @@ class RegisterOld extends Component {
                   onChangeText={(text) => this.handleTextPhoto(text)}></Input>
               </Item>
             </Form>
-            <View style={{width: 200, marginTop: 30}}>
+            <View style={{width:'100%', marginTop: 30}}>
               <Button
                 style={{
-                  width: 320,
+                  width: 200,
+                  borderRadius: 30,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: 30,
+                  alignSelf: 'center',
                   backgroundColor: '#03b876',
                 }}
                 onPress={() => this.createUser(this.state.user)}>

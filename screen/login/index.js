@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {connect} from 'react-redux';
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {
   setLogin,
   setDataUser,
@@ -19,10 +19,10 @@ import {
   Text,
   View,
 } from 'native-base';
-import {SQLiteContext} from '../../config';
+import { SQLiteContext } from '../../config';
 import firestore from '@react-native-firebase/firestore';
-import {Image} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import { Image } from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class LoginOld extends Component {
   constructor(props) {
@@ -44,18 +44,16 @@ class LoginOld extends Component {
       .collection(collection)
       .doc(document)
       .get()
-      .then((snap)=>{
-        this.props.setDataUSer(snap.data())
-        this.setState({
+      .then(async (snap) => {
+        await this.setState({
           userNow: snap.data(),
-        });
-      })
-    console.info(JSON.stringify(this.props.dataUser))
-    await this.cabangSubcriber('branch', this.props.dataUser.alamat);
-
-
-
-    // this.userNowSQLite(custDocument.data());
+        })
+      }).catch( error => console.error(error))
+    // console.info("this is userNow" + JSON.stringify(this.state.userNow))
+  await  this.props.setDataUSer(this.state.userNow)
+  // console.log('this is data user' + JSON.stringify(this.props.dataUser))
+    await this.cabangSubcriber('branch', this.state.userNow.alamat);
+   // this.userNowSQLite(custDocument.data());
   };
 
   cabangSubcriber = async (collection, document) => {
@@ -76,81 +74,6 @@ class LoginOld extends Component {
     // alert(JSON.stringify(data));
     this.props.setDataCabang(data);
   };
-
-  // cabangNowSQLite = async (dataNow) => {
-  //   // console.log('datanow ' + JSON.stringify(dataNow));
-  //   const data = [];
-  //   for (let i = 0; i < dataNow.length; i++) {
-  //     this.props.sqlite
-  //       .runQuery(
-  //         ' insert into branch values (?, ?, ?, ?)',
-  //         [i + 1, dataNow[i].alamat, dataNow[i].branch, dataNow[i].photo],
-  //         [],
-  //       )
-  //       .then(() => console.info('successfully inserting data cabang'))
-  //       .catch((err) => {
-  //         this.props.sqlite.runQuery(
-  //           `update branch set id='${i + 1}', alamat='${
-  //             dataNow[i].alamat
-  //           }', branch='${dataNow[i].branch}', photo='${
-  //             dataNow[i].photo
-  //           }' where id='${i + 1}'`,
-  //           [],
-  //         );
-  //       });
-  //     console.log(i);
-  //     continue;
-  //   }
-  //   this.props.sqlite.runQuery(`select * from branch`, []).then(([results]) => {
-  //     console.log(results.rows.item(0));
-  //     for (let i = 0; i < 100; i++) {
-  //       if (results.rows.item(i) !== undefined) {
-  //         data.push(results.rows.item(i));
-  //       }
-  //     }
-  //     // alert(JSON.stringify(data));
-  //     this.props.setDataCabang(data);
-  //   });
-  // };
-
-  // userNowSQLite = async (dataNow) => {
-  //   // console.log('datanow ' + JSON.stringify(dataNow));
-  //   const data = [];
-  //   await this.props.sqlite.runQuery(
-  //     `update user set username='${dataNow.name}', alamat='${dataNow.alamat}', photo='${dataNow.photo}', email='${dataNow.email}' where id='1'`,
-  //     [],
-  //   );
-  //   // await this.orderUserSQLite();
-
-  //   await this.props.sqlite.runQuery(`select * from user`, []).then(([results]) => {
-  //     console.log(results.rows.item(0));
-  //     for (let i = 0; i < 100; i++) {
-  //       if (results.rows.item(i) !== undefined) {
-  //         data.push(results.rows.item(i));
-  //       }
-  //     }
-  //     this.props.setDataUSer(data);
-  //   });
-  // };
-
-  // orderUserSQLite = async () => {
-  //   console.log(this.state.user.email);
-  //   const filterData = [];
-  //   await this.props.sqlite
-  //     .runQuery(
-  //       `select * from orders where email='${this.state.user.email}'`,
-  //       [],
-  //     )
-  //     .then(([results]) => {
-  //       for (let i = 0; i < 100; i++) {
-  //         if (results.rows.item(i) !== undefined) {
-  //           filterData.push(results.rows.item(i));
-  //         }
-  //       }
-  //       this.props.setDataOrders(filterData);
-  //       // alert(this.props.dataOrder)
-  //     });
-  // };
   handleTextEmail = (text) => {
     this.setState({
       user: {
@@ -169,19 +92,9 @@ class LoginOld extends Component {
     });
   };
 
-  signIn = (data) => {
-    auth()
-      .signInWithEmailAndPassword(data.email, data.password)
-      .then(() => {
-        this.subcriber('customers', data.email);
-      })
-      .then(() => {
-        this.props.setStatusLogin();
-        // alert(JSON.stringify(this.props.dataUser))
-      //  this.props.setStatusLogin();
-        // alert(JSON.stringify(this.props.dataUser));
-      })
-      .catch((error) => {
+  signIn = async (data) => {
+    await auth()
+      .signInWithEmailAndPassword(data.email, data.password).then(()=>console.info('user logged in')).catch((error) => {
         if (error.code === 'auth/email-already-in-use') {
           console.log('That email address is already in use!');
         }
@@ -192,6 +105,15 @@ class LoginOld extends Component {
 
         console.error(error);
       });
+        // alert ("logged in")
+       await this.subcriber('customers', data.email);
+        
+        // alert("ini dari sign in " + JSON.stringify(this.props.dataUser))
+        //  this.props.setStatusLogin();
+        // alert(JSON.stringify(this.props.dataUser));
+
+
+      this.props.setStatusLogin();
   };
   render() {
     return (
@@ -204,12 +126,12 @@ class LoginOld extends Component {
             alignItems: 'center',
           }}>
           <Image
-            style={{width: 150, height: 150}}
+            style={{ width: 150, height: 150 }}
             source={require('../../assets/images/logo.png')}
           />
         </View>
         <Container>
-          <Content style={{marginTop: 50, marginHorizontal: 20}}>
+          <Content style={{ marginTop: 50, marginHorizontal: 20 }}>
             <Form>
               <Item floatingLabel>
                 <Label>Email</Label>
@@ -226,13 +148,15 @@ class LoginOld extends Component {
                   }></Input>
               </Item>
             </Form>
-            <View style={{width: 200, marginTop: 30}}>
+            <View style={{
+              width: 200, marginTop: 30, alignSelf: 'center'
+            }}>
               <Button
                 style={{
-                  width: 320,
+                  width: 200,
+                  borderRadius: 30,
                   justifyContent: 'center',
                   alignItems: 'center',
-                  borderRadius: 30,
                   backgroundColor: '#03b876',
                 }}
                 title="LOGIN"
@@ -246,12 +170,12 @@ class LoginOld extends Component {
                 <Text>Log In</Text>
               </Button>
             </View>
-            <View style={{justifyContent:'center', alignItems:'center', marginVertical: 30}}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 30 }}>
               <Text>Forgot Password?</Text>
             </View>
 
-            <View style={{justifyContent:'center', alignItems:'center', marginVertical: 60}}>
-              <TouchableOpacity onPress={()=>this.props.navigation.navigate('Register')}>
+            <View style={{ justifyContent: 'center', alignItems: 'center', marginVertical: 60 }}>
+              <TouchableOpacity onPress={() => this.props.navigation.navigate('Register')}>
                 <Text>New Here? Sign Up!</Text>
               </TouchableOpacity>
             </View>
